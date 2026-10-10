@@ -1,0 +1,91 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: JalFaasla Punjab Groundwater-Aware Crop & Irrigation Advisor on AWS
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 512
+    Runtime: python3.12
+    Environment:
+      Variables:
+        STAGE: prod
+
+Resources:
+  # HTTP API Gateway for clean direct routes
+  JalFaaslaHttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowOrigins:
+          - "*"
+        AllowMethods:
+          - GET
+          - POST
+          - OPTIONS
+        AllowHeaders:
+          - "*"
+
+  # Backend Lambda Function
+  JalFaaslaBackendFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../backend
+      Handler: aws.mangum_handler.handler
+      Description: JalFaasla FastAPI advisory computation engine
+      Events:
+        AdvisorRoute:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref JalFaaslaHttpApi
+            Path: /advisor/{proxy+}
+            Method: ANY
+        GroundwaterRoute:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref JalFaaslaHttpApi
+            Path: /groundwater/{proxy+}
+            Method: ANY
+        CropsRoute:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref JalFaaslaHttpApi
+            Path: /crops/{proxy+}
+            Method: ANY
+        WeatherRoute:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref JalFaaslaHttpApi
+            Path: /weather/{proxy+}
+            Method: ANY
+        CommunityRoute:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref JalFaaslaHttpApi
+            Path: /community/{proxy+}
+            Method: ANY
+        HealthRoute:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref JalFaaslaHttpApi
+            Path: /health
+            Method: GET
+
+  # S3 Bucket for Frontend Hosting
+  FrontendBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "jalfaasla-frontend-${AWS::AccountId}-${AWS::Region}"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+Outputs:
+  ApiEndpoint:
+    Description: HTTP API Gateway direct endpoint URL
+    Value: !Sub "https://${JalFaaslaHttpApi}.execute-api.${AWS::Region}.amazonaws.com"
+  FrontendBucketName:
+    Description: S3 Bucket Name for Frontend
+    Value: !Ref FrontendBucket
