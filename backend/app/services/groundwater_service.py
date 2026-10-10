@@ -2,7 +2,7 @@
 Central Ground Water Board (CGWB) & PWRDA Ground Water Dynamics of Punjab.
 Provides block-level extraction stages, water table trends, and risk index calculations.
 """
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 from app.models.schemas import GroundwaterBlockInfo
 
 PUNJAB_BLOCK_DATABASE: Dict[str, GroundwaterBlockInfo] = {

@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: JalFaasla Punjab Groundwater-Aware Crop & Irrigation Advisor on AWS
+Description: Building Momentum - JalFaasla Punjab Groundwater-Aware Crop & Irrigation Advisor on AWS
 
 Globals:
   Function:
@@ -31,51 +31,27 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ../backend
-      Handler: aws.mangum_handler.handler
+      Handler: app.main.handler
       Description: JalFaasla FastAPI advisory computation engine
       Events:
-        AdvisorRoute:
+        ProxyRoute:
           Type: HttpApi
           Properties:
             ApiId: !Ref JalFaaslaHttpApi
-            Path: /advisor/{proxy+}
+            Path: /{proxy+}
             Method: ANY
-        GroundwaterRoute:
+        RootRoute:
           Type: HttpApi
           Properties:
             ApiId: !Ref JalFaaslaHttpApi
-            Path: /groundwater/{proxy+}
+            Path: /
             Method: ANY
-        CropsRoute:
-          Type: HttpApi
-          Properties:
-            ApiId: !Ref JalFaaslaHttpApi
-            Path: /crops/{proxy+}
-            Method: ANY
-        WeatherRoute:
-          Type: HttpApi
-          Properties:
-            ApiId: !Ref JalFaaslaHttpApi
-            Path: /weather/{proxy+}
-            Method: ANY
-        CommunityRoute:
-          Type: HttpApi
-          Properties:
-            ApiId: !Ref JalFaaslaHttpApi
-            Path: /community/{proxy+}
-            Method: ANY
-        HealthRoute:
-          Type: HttpApi
-          Properties:
-            ApiId: !Ref JalFaaslaHttpApi
-            Path: /health
-            Method: GET
 
   # S3 Bucket for Frontend Hosting
   FrontendBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub "jalfaasla-frontend-${AWS::AccountId}-${AWS::Region}"
+      BucketName: !Sub "building-momentum-frontend-${AWS::AccountId}-${AWS::Region}"
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true

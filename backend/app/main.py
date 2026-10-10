@@ -38,3 +38,10 @@ def health_check():
         "region": "Punjab - Ludhiana Central Belt",
         "authorities": ["PAU Ludhiana", "CGWB", "PWRDA"]
     }
+
+# AWS Lambda Handler using Mangum
+try:
+    from mangum import Mangum
+    handler = Mangum(app)
+except ImportError:
+    pass
