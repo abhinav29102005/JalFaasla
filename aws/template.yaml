@@ -120,8 +120,9 @@ Resources:
         Origins:
           - Id: S3FrontendOrigin
             DomainName: !GetAtt FrontendBucket.RegionalDomainName
-            OriginAccessControlId: !Ref FrontendOAC
-            S3OriginConfig: {}
+            OriginAccessControlId: !GetAtt FrontendOAC.Id
+            S3OriginConfig:
+              OriginAccessIdentity: ""
           - Id: HttpApiOrigin
             DomainName: !Sub "${JalFaaslaHttpApi}.execute-api.${AWS::Region}.amazonaws.com"
             CustomOriginConfig:
@@ -140,10 +141,7 @@ Resources:
             - HEAD
             - OPTIONS
           Compress: true
-          ForwardedValues:
-            QueryString: false
-            Cookies:
-              Forward: none
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6
         CacheBehaviors:
           - PathPattern: /advisor/*
             TargetOriginId: HttpApiOrigin
@@ -161,7 +159,7 @@ Resources:
               - HEAD
               - OPTIONS
             CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
-            OriginRequestPolicyId: b680b4b7-0361-465e-ac9b-02b1232e1ffc
+            OriginRequestPolicyId: b689b0a8-53d0-40ab-baf2-68738e2966ac
           - PathPattern: /groundwater/*
             TargetOriginId: HttpApiOrigin
             ViewerProtocolPolicy: redirect-to-https
@@ -178,7 +176,7 @@ Resources:
               - HEAD
               - OPTIONS
             CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
-            OriginRequestPolicyId: b680b4b7-0361-465e-ac9b-02b1232e1ffc
+            OriginRequestPolicyId: b689b0a8-53d0-40ab-baf2-68738e2966ac
           - PathPattern: /crops/*
             TargetOriginId: HttpApiOrigin
             ViewerProtocolPolicy: redirect-to-https
@@ -195,7 +193,7 @@ Resources:
               - HEAD
               - OPTIONS
             CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
-            OriginRequestPolicyId: b680b4b7-0361-465e-ac9b-02b1232e1ffc
+            OriginRequestPolicyId: b689b0a8-53d0-40ab-baf2-68738e2966ac
           - PathPattern: /weather/*
             TargetOriginId: HttpApiOrigin
             ViewerProtocolPolicy: redirect-to-https
@@ -212,7 +210,7 @@ Resources:
               - HEAD
               - OPTIONS
             CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
-            OriginRequestPolicyId: b680b4b7-0361-465e-ac9b-02b1232e1ffc
+            OriginRequestPolicyId: b689b0a8-53d0-40ab-baf2-68738e2966ac
           - PathPattern: /community/*
             TargetOriginId: HttpApiOrigin
             ViewerProtocolPolicy: redirect-to-https
@@ -229,7 +227,7 @@ Resources:
               - HEAD
               - OPTIONS
             CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
-            OriginRequestPolicyId: b680b4b7-0361-465e-ac9b-02b1232e1ffc
+            OriginRequestPolicyId: b689b0a8-53d0-40ab-baf2-68738e2966ac
           - PathPattern: /health
             TargetOriginId: HttpApiOrigin
             ViewerProtocolPolicy: redirect-to-https
@@ -242,7 +240,7 @@ Resources:
               - HEAD
               - OPTIONS
             CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
-            OriginRequestPolicyId: b680b4b7-0361-465e-ac9b-02b1232e1ffc
+            OriginRequestPolicyId: b689b0a8-53d0-40ab-baf2-68738e2966ac
         CustomErrorResponses:
           - ErrorCode: 403
             ResponsePagePath: /index.html
