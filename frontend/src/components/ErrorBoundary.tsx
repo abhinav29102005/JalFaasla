@@ -37,52 +37,41 @@ export class ErrorBoundary extends Component<Props, State> {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: '#090d16',
-          color: '#f8fafc',
+          background: 'var(--bg)',
+          color: 'var(--ink)',
           padding: '24px',
-          fontFamily: 'system-ui, -apple-system, sans-serif'
+          fontFamily: 'var(--font-body)'
         }}>
           <div style={{
             maxWidth: '520px',
-            background: 'rgba(15, 23, 42, 0.95)',
-            border: '1px solid rgba(239, 68, 68, 0.4)',
-            borderRadius: '16px',
+            background: 'var(--paper)',
+            border: '2px solid var(--line)',
+            borderRadius: 'var(--radius-lg)',
             padding: '32px',
-            textAlign: 'center',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.7)'
+            textAlign: 'center'
           }}>
             <div style={{
               width: '56px',
               height: '56px',
               borderRadius: '50%',
-              background: 'rgba(239, 68, 68, 0.15)',
+              background: 'var(--bg)',
+              border: '1.5px solid var(--line)',
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
               marginBottom: '16px'
             }}>
-              <AlertTriangle size={32} color="#ef4444" />
+              <AlertTriangle size={32} color="var(--alert)" />
             </div>
-            <h2 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '8px' }}>
+            <h2 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '8px', color: 'var(--alert)' }}>
               ਐਪਲੀਕੇਸ਼ਨ ਰੀਲੋਡ ਕਰੋ (Application Notice)
             </h2>
-            <p style={{ color: '#94a3b8', fontSize: '14px', lineHeight: 1.6, marginBottom: '20px' }}>
+            <p style={{ color: 'var(--muted)', fontSize: '14px', lineHeight: 1.6, marginBottom: '20px' }}>
               A temporary display error occurred. Click below to reload the dashboard:
             </p>
             <button
               onClick={this.handleReload}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '10px 20px',
-                background: '#0284c7',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '8px',
-                fontWeight: 600,
-                cursor: 'pointer'
-              }}
+              className="btn-primary"
             >
               <RefreshCw size={16} />
               <span>ਮੁੜ ਚਲਾਓ (Reload Dashboard)</span>

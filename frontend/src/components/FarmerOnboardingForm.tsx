@@ -153,7 +153,7 @@ export const FarmerOnboardingForm: React.FC<FarmerOnboardingFormProps> = ({
             <label className="input-label" htmlFor="land-size-input">
               {t.landSizeAcre}
             </label>
-            <span className="field-value-green font-mono">
+            <span className="field-value-green tabular-nums">
               {input.landSizeAcres} {currentLang === 'pa' ? 'ਏਕੜ' : 'acres'}
             </span>
           </div>
@@ -177,7 +177,7 @@ export const FarmerOnboardingForm: React.FC<FarmerOnboardingFormProps> = ({
               step="0.5"
               value={input.landSizeAcres}
               onChange={e => onChange({ ...input, landSizeAcres: Math.max(0.5, parseFloat(e.target.value) || 1) })}
-              className="styled-number-input font-mono"
+              className="styled-number-input tabular-nums"
             />
           </div>
         </div>
@@ -188,7 +188,7 @@ export const FarmerOnboardingForm: React.FC<FarmerOnboardingFormProps> = ({
             <label className="input-label" htmlFor="tubewell-depth-input">
               {t.tubewellDepthM}
             </label>
-            <span className="field-value-green font-mono">
+            <span className="field-value-green tabular-nums">
               {input.tubewellDepthM} m (~{Math.round(input.tubewellDepthM * 3.28)} ft)
             </span>
           </div>
@@ -212,7 +212,7 @@ export const FarmerOnboardingForm: React.FC<FarmerOnboardingFormProps> = ({
               step="0.5"
               value={input.tubewellDepthM}
               onChange={e => onChange({ ...input, tubewellDepthM: parseFloat(e.target.value) || 10 })}
-              className="styled-number-input font-mono"
+              className="styled-number-input tabular-nums"
             />
           </div>
         </div>
@@ -333,7 +333,7 @@ export const FarmerOnboardingForm: React.FC<FarmerOnboardingFormProps> = ({
           <input
             type="date"
             id="planned-date-input"
-            className="styled-select font-mono"
+            className="styled-select tabular-nums"
             value={input.plannedDate}
             onChange={e => onChange({ ...input, plannedDate: e.target.value })}
           />

@@ -3,9 +3,7 @@ import {
   Bot, 
   Send, 
   User, 
-  Sparkles, 
   Lightbulb, 
-  CornerDownLeft,
   CheckCircle2,
   Cpu
 } from 'lucide-react';
@@ -56,18 +54,18 @@ export const ConversationalAdvisor: React.FC<ConversationalAdvisorProps> = ({
   };
 
   return (
-    <div className="card chat-card">
+    <div className="panel">
       <div className="card-header-row">
         <div className="title-with-badge">
           <h2 className="card-title">
-            <Bot className="card-title-icon text-cyan" size={20} />
+            <Bot className="card-title-icon text-ink" size={20} />
             {t.tabAiAdvisor}
           </h2>
-          <span className="live-badge">Strands Agents SDK • AWS Bedrock Model</span>
+          <span className="status"><span className="status-dot"></span>Strands Agents SDK • AWS Bedrock Model</span>
         </div>
 
-        <div className="agent-status-pill">
-          <Cpu size={14} className="text-emerald" />
+        <div className="status">
+          <Cpu size={14} className="text-field" />
           <span>PAU Ludhiana Agronomy Fine-Tuned</span>
         </div>
       </div>
@@ -75,7 +73,7 @@ export const ConversationalAdvisor: React.FC<ConversationalAdvisorProps> = ({
       {/* Suggested Quick Prompt Pills */}
       <div className="quick-prompts-row">
         <span className="prompts-label">
-          <Lightbulb size={14} className="text-amber" />
+          <Lightbulb size={14} className="text-caution" />
           {currentLang === 'pa' ? 'ਤੁਰੰਤ ਸਵਾਲ ਪੁੱਛੋ:' : 'Common Farmer Inquiries:'}
         </span>
         <div className="prompts-list">
@@ -141,9 +139,9 @@ export const ConversationalAdvisor: React.FC<ConversationalAdvisorProps> = ({
 
               {msg.metricsHighlight && (
                 <div className="chat-metric-highlight">
-                  <CheckCircle2 size={16} className="text-emerald" />
+                  <CheckCircle2 size={16} className="text-field" />
                   <span className="metric-hl-label">{msg.metricsHighlight.label}:</span>
-                  <span className="metric-hl-val font-mono font-bold text-emerald">{msg.metricsHighlight.value}</span>
+                  <span className="metric-hl-val tabular-nums font-bold text-field">{msg.metricsHighlight.value}</span>
                 </div>
               )}
 
@@ -205,7 +203,7 @@ export const ConversationalAdvisor: React.FC<ConversationalAdvisorProps> = ({
         />
         <button 
           type="submit" 
-          className="btn btn-primary chat-send-btn"
+          className="btn-primary chat-send-btn"
           disabled={!inputQuery.trim() || isTyping}
         >
           <Send size={16} />

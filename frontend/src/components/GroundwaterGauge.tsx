@@ -53,10 +53,10 @@ export const GroundwaterGauge: React.FC<GroundwaterGaugeProps> = ({
         </div>
 
         <div className="gauge-readout-row">
-          <span className="gauge-big-number font-mono">
+          <span className="gauge-big-number tabular-nums">
             {depthM.toFixed(1)} <span className="gauge-unit">m</span>
           </span>
-          <span className="gauge-feet-number font-mono">
+          <span className="gauge-feet-number tabular-nums">
             (~{depthFt} ft)
           </span>
         </div>
@@ -124,7 +124,7 @@ export const GroundwaterGauge: React.FC<GroundwaterGaugeProps> = ({
                   textAnchor="end"
                   fill="var(--muted)"
                   fontSize="10"
-                  fontFamily="var(--font-mono)"
+                  className="tabular-nums"
                 >
                   {m}m
                 </text>
@@ -185,7 +185,7 @@ export const GroundwaterGauge: React.FC<GroundwaterGaugeProps> = ({
             y2={waterTableY}
             stroke="var(--water)"
             strokeWidth="3"
-            strokeDasharray="4 2"
+            className="water-table-solid-line"
           />
           {/* Water line indicator pill */}
           <rect
@@ -205,7 +205,7 @@ export const GroundwaterGauge: React.FC<GroundwaterGaugeProps> = ({
             fill="var(--water)"
             fontSize="10"
             fontWeight="700"
-            fontFamily="var(--font-mono)"
+            className="tabular-nums"
           >
             {depthM.toFixed(1)}m water
           </text>

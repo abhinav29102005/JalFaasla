@@ -60,7 +60,7 @@ export const LegalComplianceAlert: React.FC<LegalComplianceAlertProps> = ({
               <span className="notified-date-label">
                 {currentLang === 'pa' ? 'ਸਰਕਾਰੀ ਨੋਟੀਫਾਈਡ ਝੋਨਾ ਲਵਾਈ ਮਿਤੀ:' : 'State notified transplanting date:'}
               </span>{' '}
-              <strong className="notified-date-val font-mono">
+              <strong className="notified-date-val tabular-nums">
                 {notifiedDateFormatted}
               </strong>
             </div>
@@ -76,7 +76,7 @@ export const LegalComplianceAlert: React.FC<LegalComplianceAlertProps> = ({
                 {currentLang === 'pa' ? 'ਸੰਭਾਵੀ ਕਾਨੂੰਨੀ ਜੁਰਮਾਨਾ (ਧਾਰਾ 5 ਤਹਿਤ):' : 'Potential statutory penalty (Section 5):'}
               </span>
               <div className="penalty-figure-row">
-                <span className="penalty-number font-mono font-bold text-alert">
+                <span className="penalty-number tabular-nums font-bold text-alert">
                   ₹{(legal.penaltyRiskInr ?? 0).toLocaleString('en-IN')}
                 </span>
                 <span className="penalty-rate-note">

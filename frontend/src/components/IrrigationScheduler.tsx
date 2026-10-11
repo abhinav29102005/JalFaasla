@@ -81,28 +81,28 @@ export const IrrigationScheduler: React.FC<IrrigationSchedulerProps> = ({
             <Thermometer size={16} className="text-muted" aria-hidden="true" />
             <div>
               <span className="agromet-cell-label">{currentLang === 'pa' ? 'ਤਾਪਮਾਨ' : 'Temperature'}</span>
-              <span className="agromet-cell-value font-mono">{liveWeather.current_temperature_c}°C</span>
+              <span className="agromet-cell-value tabular-nums">{liveWeather.current_temperature_c}°C</span>
             </div>
           </div>
           <div className="agromet-metric-cell">
             <Droplets size={16} className="text-water" aria-hidden="true" />
             <div>
               <span className="agromet-cell-label">{currentLang === 'pa' ? 'ਨਮੀ' : 'Humidity'}</span>
-              <span className="agromet-cell-value font-mono">{liveWeather.humidity_pct}%</span>
+              <span className="agromet-cell-value tabular-nums">{liveWeather.humidity_pct}%</span>
             </div>
           </div>
           <div className="agromet-metric-cell">
             <Wind size={16} className="text-muted" aria-hidden="true" />
             <div>
               <span className="agromet-cell-label">{currentLang === 'pa' ? 'ਹਵਾ' : 'Wind'}</span>
-              <span className="agromet-cell-value font-mono">{liveWeather.wind_speed_kmh} km/h</span>
+              <span className="agromet-cell-value tabular-nums">{liveWeather.wind_speed_kmh} km/h</span>
             </div>
           </div>
           <div className="agromet-metric-cell">
             <Cloud size={16} className="text-muted" aria-hidden="true" />
             <div>
               <span className="agromet-cell-label">{currentLang === 'pa' ? 'ਮੌਨਸੂਨ' : 'Monsoon onset'}</span>
-              <span className="agromet-cell-value font-mono text-water">{liveWeather.monsoon_onset_forecast}</span>
+              <span className="agromet-cell-value tabular-nums text-water">{liveWeather.monsoon_onset_forecast}</span>
             </div>
           </div>
         </div>
@@ -166,7 +166,7 @@ export const IrrigationScheduler: React.FC<IrrigationSchedulerProps> = ({
                   >
                     <td className="cell-day">
                       <span className="font-bold">{advice.day_name}</span>
-                      <span className="cell-subdate font-mono">{advice.date_str}</span>
+                      <span className="cell-subdate tabular-nums">{advice.date_str}</span>
                     </td>
                     <td className="cell-condition">
                       <div className="condition-flex">
@@ -174,13 +174,13 @@ export const IrrigationScheduler: React.FC<IrrigationSchedulerProps> = ({
                         <span>{advice.action.includes('SKIP') ? 'Rain expected' : 'Dry / Clear'}</span>
                       </div>
                     </td>
-                    <td className="cell-rain font-mono">
+                    <td className="cell-rain tabular-nums">
                       {advice.forecast_rain_mm > 0 ? `${advice.forecast_rain_mm} mm` : '0 mm'}
                     </td>
-                    <td className="cell-temp font-mono">
+                    <td className="cell-temp tabular-nums">
                       {advice.temp_max_c}°C
                     </td>
-                    <td className="cell-awd font-mono">
+                    <td className="cell-awd tabular-nums">
                       {advice.awd_water_tube_reading_cm}
                     </td>
                     <td className="cell-action">
@@ -215,7 +215,7 @@ export const IrrigationScheduler: React.FC<IrrigationSchedulerProps> = ({
                       <span className="font-bold">
                         {currentLang === 'pa' ? day.dayNamePa : day.dayName}
                       </span>
-                      <span className="cell-subdate font-mono">
+                      <span className="cell-subdate tabular-nums">
                         {new Date(day.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
                       </span>
                     </td>
@@ -225,13 +225,13 @@ export const IrrigationScheduler: React.FC<IrrigationSchedulerProps> = ({
                         <span>{currentLang === 'pa' ? day.conditionPa : day.condition}</span>
                       </div>
                     </td>
-                    <td className="cell-rain font-mono">
+                    <td className="cell-rain tabular-nums">
                       {day.rainfallMm > 0 ? `${day.rainfallMm} mm (${day.rainProbabilityPercent}%)` : '0 mm'}
                     </td>
-                    <td className="cell-temp font-mono">
+                    <td className="cell-temp tabular-nums">
                       {day.tempMaxC}°C / {day.tempMinC}°C
                     </td>
-                    <td className="cell-awd font-mono">
+                    <td className="cell-awd tabular-nums">
                       ET₀ {day.et0EvapoTranspirationMm} mm
                     </td>
                     <td className="cell-action">
@@ -271,7 +271,7 @@ export const IrrigationScheduler: React.FC<IrrigationSchedulerProps> = ({
         </h4>
         <div className="pipe-steps-row">
           <div className="pipe-step-cell">
-            <span className="step-counter font-mono">1</span>
+            <span className="step-counter tabular-nums">1</span>
             <p>
               {currentLang === 'pa'
                 ? '40 ਸੈ.ਮੀ. ਲੰਬੀ ਪਲਾਸਟਿਕ ਪਾਈਪ ਲਵੋ, ਜਿਸ ਵਿੱਚ 20 ਸੈ.ਮੀ. ਤੱਕ ਛੇਕ ਹੋਣ।'
@@ -279,7 +279,7 @@ export const IrrigationScheduler: React.FC<IrrigationSchedulerProps> = ({
             </p>
           </div>
           <div className="pipe-step-cell">
-            <span className="step-counter font-mono">2</span>
+            <span className="step-counter tabular-nums">2</span>
             <p>
               {currentLang === 'pa'
                 ? 'ਪਾਈਪ ਨੂੰ ਖੇਤ ਵਿੱਚ 20 ਸੈ.ਮੀ. ਜ਼ਮੀਨ ਅੰਦਰ ਗੱਡੋ ਅਤੇ ਅੰਦਰੋਂ ਮਿੱਟੀ ਕੱਢ ਲਵੋ।'
@@ -287,7 +287,7 @@ export const IrrigationScheduler: React.FC<IrrigationSchedulerProps> = ({
             </p>
           </div>
           <div className="pipe-step-cell">
-            <span className="step-counter font-mono">3</span>
+            <span className="step-counter tabular-nums">3</span>
             <p>
               {currentLang === 'pa'
                 ? 'ਜਦੋਂ ਤੱਕ ਪਾਈਪ ਵਿੱਚ ਪਾਣੀ ਦਾ ਪੱਧਰ 5 ਸੈ.ਮੀ. ਹੇਠਾਂ ਨਾ ਜਾਵੇ, ਟਿਊਬਵੈੱਲ ਨਾ ਚਲਾਓ।'

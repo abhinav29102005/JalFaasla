@@ -43,7 +43,6 @@ const MAP_BLOCKS: MapBlockData[] = [
   // Surrounding Key Punjab Districts in the Belt
   { id: 'sangrur', name: 'Sangrur / Dhuri', namePa: 'ਸੰਗਰੂਰ / ਧੂਰੀ', district: 'Sangrur', category: 'Over-Exploited', stagePercent: 260, depthM: 34.0, annualDropCm: 82, x: 180, y: 345, width: 130, height: 65, rx: 8 },
   { id: 'jalandhar-east', name: 'Jalandhar East', namePa: 'ਜਲੰਧਰ ਪੂਰਬੀ', district: 'Jalandhar', category: 'Over-Exploited', stagePercent: 182, depthM: 19.5, annualDropCm: 52, x: 140, y: 45, width: 110, height: 55, rx: 6 },
-  { id: 'patiala-nabha', name: 'Nabha / Patiala', namePa: 'ਨਾਭਾ / ਪਟਿਆਲਾ', district: 'Patiala', category: 'Over-Exploited', stagePercent: 215, depthM: 27.0, annualDropCm: 66, x: 320, y: 320, width: 115, height: 65, rx: 8 },
   { id: 'hoshiarpur', name: 'Kandi Belt (Hoshiarpur)', namePa: 'ਕੰਢੀ ਇਲਾਕਾ (ਹੁਸ਼ਿਆਰਪੁਰ)', district: 'Hoshiarpur', category: 'Safe', stagePercent: 62, depthM: 8.5, annualDropCm: 15, x: 260, y: 40, width: 130, height: 50, rx: 6 },
   { id: 'moga', name: 'Moga West', namePa: 'ਮੋਗਾ ਪੱਛਮੀ', district: 'Moga', category: 'Over-Exploited', stagePercent: 235, depthM: 29.5, annualDropCm: 76, x: 35, y: 175, width: 78, height: 85, rx: 6 },
 ];
@@ -54,17 +53,45 @@ export const PunjabGisMap: React.FC<PunjabGisMapProps> = ({
   onSelectBlock,
 }) => {
   const [hoveredBlock, setHoveredBlock] = useState<MapBlockData | null>(null);
+  const [mapColors, setMapColors] = useState({
+    critical: 'var(--map-critical)',
+    semi: 'var(--map-semi)',
+    safe: 'var(--map-safe)',
+    overExploited: 'var(--alert)',
+  });
+
+  React.useEffect(() => {
+    const updateColors = () => {
+      const styles = getComputedStyle(document.documentElement);
+      const crit = styles.getPropertyValue('--map-critical').trim();
+      const semi = styles.getPropertyValue('--map-semi').trim();
+      const safe = styles.getPropertyValue('--map-safe').trim();
+      const alert = styles.getPropertyValue('--alert').trim();
+
+      setMapColors({
+        critical: crit || 'var(--map-critical)',
+        semi: semi || 'var(--map-semi)',
+        safe: safe || 'var(--map-safe)',
+        overExploited: alert || 'var(--alert)',
+      });
+    };
+
+    updateColors();
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    mediaQuery.addEventListener('change', updateColors);
+    return () => mediaQuery.removeEventListener('change', updateColors);
+  }, []);
 
   const getColor = (category: string) => {
     switch (category) {
       case 'Over-Exploited':
-        return 'var(--alert)';
+        return mapColors.overExploited;
       case 'Critical':
-        return '#C25438';
+        return mapColors.critical;
       case 'Semi-Critical':
-        return '#8A6D3B';
+        return mapColors.semi;
       case 'Safe':
-        return 'var(--field)';
+        return mapColors.safe;
       default:
         return 'var(--muted)';
     }
@@ -144,11 +171,15 @@ export const PunjabGisMap: React.FC<PunjabGisMapProps> = ({
             {currentLang === 'pa' ? 'ਅਤਿ-ਸ਼ੋਸ਼ਿਤ (>100%)' : 'Over-exploited (>100%)'}
           </span>
           <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ width: '10px', height: '10px', borderRadius: '2px', background: '#C25438' }} />
+            <span style={{ width: '10px', height: '10px', borderRadius: '2px', background: 'var(--map-critical)' }} />
             {currentLang === 'pa' ? 'ਸੰਕਟਮਈ (90-100%)' : 'Critical (90-100%)'}
           </span>
           <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ width: '10px', height: '10px', borderRadius: '2px', background: 'var(--field)' }} />
+            <span style={{ width: '10px', height: '10px', borderRadius: '2px', background: 'var(--map-semi)' }} />
+            {currentLang === 'pa' ? 'ਅਰਧ-ਸੰਕਟਮਈ (70-90%)' : 'Semi-Critical (70-90%)'}
+          </span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ width: '10px', height: '10px', borderRadius: '2px', background: 'var(--map-safe)' }} />
             {currentLang === 'pa' ? 'ਸੁਰੱਖਿਅਤ (<70%)' : 'Safe (<70%)'}
           </span>
         </div>
@@ -244,7 +275,7 @@ export const PunjabGisMap: React.FC<PunjabGisMapProps> = ({
                   textAnchor="middle"
                   fill="var(--ink)"
                   fontSize="9.5"
-                  fontFamily="var(--font-mono)"
+                  className="tabular-nums"
                   fontWeight="600"
                   style={{ pointerEvents: 'none' }}
                 >
@@ -285,7 +316,7 @@ export const PunjabGisMap: React.FC<PunjabGisMapProps> = ({
                 {hoveredBlock ? hoveredBlock.category : selectedBlock.cgwbCategory}
               </span>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '8px', fontFamily: 'var(--font-mono)' }}>
+            <div className="tabular-nums" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '8px' }}>
               <div>
                 <span style={{ color: 'var(--muted)', fontSize: '10px', display: 'block' }}>Extraction stage</span>
                 <span style={{ color: 'var(--alert)', fontWeight: 700, fontSize: '13px' }}>

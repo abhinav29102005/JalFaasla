@@ -19,7 +19,7 @@ export const Footer: React.FC<FooterProps> = ({
         <div className="footer-top-row">
           <div className="footer-brand-col">
             <div className="brand-logo-inline">
-              <Droplet size={20} className="text-blue" />
+              <Droplet size={20} className="text-ink" />
               <span className="footer-brand-title">JalFaasla • ਜਲ ਫ਼ਾਸਲਾ</span>
             </div>
             <p className="footer-brand-desc">
@@ -67,7 +67,7 @@ export const Footer: React.FC<FooterProps> = ({
               <li>
                 <button 
                   onClick={onOpenAwsModal}
-                  className="footer-link-btn text-cyan"
+                  className="footer-link-btn text-ink"
                 >
                   AWS Cloud Architecture (Amplify, Lambda, SageMaker)
                 </button>
@@ -90,8 +90,8 @@ export const Footer: React.FC<FooterProps> = ({
           <div className="footer-legal-copy">
             <span>© 2026 JalFaasla. Dedicated to Punjab's Farmers and Groundwater Sustainability.</span>
           </div>
-          <div className="footer-subtext-pill">
-            <Droplet size={14} className="text-cyan" />
+          <div className="footer-subtext-line text-muted">
+            <Droplet size={14} className="text-muted" />
             <span>"ਨਾ ਕਹੋ ਪਾਣੀ ਬਚਾਓ, ਦੱਸੋ ਕਿੰਨੇ ਘੰਟੇ ਅਤੇ ਰੁਪਏ ਬਚਣਗੇ!"</span>
           </div>
         </div>

@@ -6,9 +6,7 @@ import {
   Check, 
   Printer, 
   Sparkles, 
-  MessageSquare,
-  ShieldCheck,
-  Droplet
+  MessageSquare
 } from 'lucide-react';
 import { FarmerAdvisoryResult } from '../utils/advisoryEngine';
 import { Language } from '../data/translations';
@@ -66,7 +64,7 @@ export const ShareableAdvisoryModal: React.FC<ShareableAdvisoryModalProps> = ({
       <div className="modal-container share-modal" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
           <div className="modal-title-row">
-            <Share2 className="text-emerald" size={22} />
+            <Share2 className="text-field" size={22} />
             <h3 className="modal-title">Shareable Farmer Advisory</h3>
           </div>
           <button className="modal-close-btn" onClick={onClose} aria-label="Close modal">
@@ -85,13 +83,13 @@ export const ShareableAdvisoryModal: React.FC<ShareableAdvisoryModalProps> = ({
                   <span className="preview-brand-sub">Government & PAU Ground-Truth Agricultural Advisory</span>
                 </div>
               </div>
-              <span className="preview-date-stamp font-mono text-xs">
+              <span className="preview-date-stamp tabular-nums text-xs">
                 {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
               </span>
             </div>
 
             <div className="advisory-highlight-banner">
-              <Sparkles size={20} className="text-amber flex-shrink-0" />
+              <Sparkles size={20} className="text-caution flex-shrink-0" />
               <p className="preview-punchline-text font-bold">
                 "{headlinePunchline}"
               </p>
@@ -100,33 +98,33 @@ export const ShareableAdvisoryModal: React.FC<ShareableAdvisoryModalProps> = ({
             <div className="preview-meta-grid">
               <div className="preview-meta-item">
                 <span className="meta-lbl">Farmer Plot:</span>
-                <span className="meta-val font-mono">{input.landSizeAcres} Acres • {input.block.name}</span>
+                <span className="meta-val tabular-nums">{input.landSizeAcres} Acres • {input.block.name}</span>
               </div>
               <div className="preview-meta-item">
                 <span className="meta-lbl">Water Table:</span>
-                <span className="meta-val font-mono">{input.tubewellDepthM} m ({input.block.cgwbCategory})</span>
+                <span className="meta-val tabular-nums">{input.tubewellDepthM} m ({input.block.cgwbCategory})</span>
               </div>
               <div className="preview-meta-item">
                 <span className="meta-lbl">Legal Notified Date:</span>
-                <span className="meta-val font-mono font-bold text-emerald">{legalCheck.notifiedDateRequired}</span>
+                <span className="meta-val tabular-nums font-bold text-field">{legalCheck.notifiedDateRequired}</span>
               </div>
               <div className="preview-meta-item">
                 <span className="meta-lbl">Legal Status:</span>
-                <span className="meta-val font-mono">{legalCheck.statusBadge}</span>
+                <span className="meta-val tabular-nums">{legalCheck.statusBadge}</span>
               </div>
             </div>
 
             <div className="preview-metrics-strip">
               <div className="p-metric-box">
-                <span className="p-m-val font-mono font-bold text-cyan">{recommendedShortPaddyAwd.tubewellHoursSaved} Hrs</span>
+                <span className="p-m-val tabular-nums font-bold text-ink">{recommendedShortPaddyAwd.tubewellHoursSaved} Hrs</span>
                 <span className="p-m-lbl">Tube-Well Saved</span>
               </div>
               <div className="p-metric-box">
-                <span className="p-m-val font-mono font-bold text-emerald">₹{(recommendedShortPaddyAwd.costSavedInr ?? 0).toLocaleString('en-IN')}</span>
+                <span className="p-m-val tabular-nums font-bold text-field">₹{(recommendedShortPaddyAwd.costSavedInr ?? 0).toLocaleString('en-IN')}</span>
                 <span className="p-m-lbl">Fuel / Power Saved</span>
               </div>
               <div className="p-metric-box">
-                <span className="p-m-val font-mono font-bold text-blue">{recommendedShortPaddyAwd.waterSavedPercent}%</span>
+                <span className="p-m-val tabular-nums font-bold text-water">{recommendedShortPaddyAwd.waterSavedPercent}%</span>
                 <span className="p-m-lbl">Water Conserved</span>
               </div>
             </div>
@@ -140,7 +138,7 @@ export const ShareableAdvisoryModal: React.FC<ShareableAdvisoryModalProps> = ({
           <div className="modal-actions-row">
             <button 
               type="button" 
-              className="btn btn-whatsapp flex-1"
+              className="btn-whatsapp flex-1"
               onClick={handleWhatsAppClick}
             >
               <MessageSquare size={18} />
@@ -149,16 +147,16 @@ export const ShareableAdvisoryModal: React.FC<ShareableAdvisoryModalProps> = ({
 
             <button 
               type="button" 
-              className="btn btn-secondary"
+              className="btn-secondary"
               onClick={handleCopy}
             >
-              {copied ? <Check size={18} className="text-emerald" /> : <Copy size={18} />}
+              {copied ? <Check size={18} className="text-field" /> : <Copy size={18} />}
               <span>{copied ? 'Copied!' : 'Copy Text'}</span>
             </button>
 
             <button 
               type="button" 
-              className="btn btn-secondary"
+              className="btn-secondary"
               onClick={handlePrint}
             >
               <Printer size={18} />

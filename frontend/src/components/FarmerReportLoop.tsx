@@ -210,15 +210,15 @@ export const FarmerReportLoop: React.FC<FarmerReportLoopProps> = ({
   };
 
   return (
-    <div className="card report-loop-card">
+    <div className="panel report-loop-card">
       <div className="card-header-row">
         <div className="title-with-badge">
           <h2 className="card-title">
-            <Users className="card-title-icon text-emerald" size={20} />
+            <Users className="card-title-icon text-field" size={20} />
             {t.reportTitle}
           </h2>
-          <span className="live-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: isLiveConnected ? '#10b981' : '#06b6d4' }} />
+          <span className="status">
+            <span className="status-dot" style={{ backgroundColor: isLiveConnected ? 'var(--field)' : 'var(--water)' }} />
             {isLiveConnected ? 'AWS API Gateway Live Feed' : 'Crowdsourced Ground Truth'}
           </span>
         </div>
@@ -228,8 +228,8 @@ export const FarmerReportLoop: React.FC<FarmerReportLoopProps> = ({
           disabled={isLoadingFeed}
           style={{
             background: 'transparent',
-            border: '1px solid rgba(255,255,255,0.15)',
-            color: '#94a3b8',
+            border: '1px solid var(--line)',
+            color: 'var(--muted)',
             padding: '4px 10px',
             borderRadius: '6px',
             cursor: 'pointer',
@@ -258,7 +258,7 @@ export const FarmerReportLoop: React.FC<FarmerReportLoopProps> = ({
 
           {submitted && (
             <div className="report-success-alert">
-              <CheckCircle2 size={18} className="text-emerald" />
+              <CheckCircle2 size={18} className="text-field" />
               <span>
                 ਰਿਪੋਰਟ ਸਫਲਤਾਪੂਰਵਕ ਦਰਜ ਹੋ ਗਈ! ਪੰਜਾਬ ਦੇ ਖੁੱਲ੍ਹੇ ਭੂਮੀਗਤ ਪਾਣੀ ਡਾਟਾਸੈੱਟ ਵਿੱਚ ਯੋਗਦਾਨ ਲਈ ਧੰਨਵਾਦ।
               </span>
@@ -303,7 +303,7 @@ export const FarmerReportLoop: React.FC<FarmerReportLoopProps> = ({
                 id="rep-depth"
                 type="number"
                 step="0.5"
-                className="form-control font-mono"
+                className="form-control tabular-nums"
                 value={depth}
                 onChange={e => setDepth(e.target.value)}
               />
@@ -330,7 +330,7 @@ export const FarmerReportLoop: React.FC<FarmerReportLoopProps> = ({
                 id="rep-yield"
                 type="number"
                 step="0.5"
-                className="form-control font-mono"
+                className="form-control tabular-nums"
                 value={yieldVal}
                 onChange={e => setYieldVal(e.target.value)}
               />
@@ -373,7 +373,7 @@ export const FarmerReportLoop: React.FC<FarmerReportLoopProps> = ({
               </label>
             </div>
 
-            <button type="submit" className="btn btn-primary submit-rep-btn" disabled={isSubmitting}>
+            <button type="submit" className="btn-primary submit-rep-btn" disabled={isSubmitting}>
               {isSubmitting ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
               <span>{isSubmitting ? 'ਦਰਜ ਹੋ ਰਿਹਾ ਹੈ...' : t.submitReport}</span>
             </button>
@@ -386,7 +386,7 @@ export const FarmerReportLoop: React.FC<FarmerReportLoopProps> = ({
             <h3 className="box-section-title font-bold">
               📡 {t.recentReports}
             </h3>
-            <span className="feed-count-pill font-mono">{reports.length} Reports</span>
+            <span className="feed-count-pill tabular-nums">{reports.length} Reports</span>
           </div>
 
           <div className="reports-list">
@@ -396,7 +396,7 @@ export const FarmerReportLoop: React.FC<FarmerReportLoopProps> = ({
                   <div>
                     <span className="rep-farmer-name font-bold">{report.farmerName}</span>
                     <span className="rep-village-location text-xs text-muted">
-                      <MapPin size={12} className="inline-icon text-cyan" />
+                      <MapPin size={12} className="inline-icon text-ink" />
                       {report.village} ({report.blockName})
                     </span>
                   </div>
@@ -406,13 +406,13 @@ export const FarmerReportLoop: React.FC<FarmerReportLoopProps> = ({
                 <div className="rep-metrics-row">
                   <div className="rep-metric">
                     <span className="rep-m-label">Water Depth</span>
-                    <span className="rep-m-val font-mono font-bold text-cyan">
+                    <span className="rep-m-val tabular-nums font-bold text-water">
                       {report.reportedDepthM} m (~{Math.round(report.reportedDepthM * 3.28)} ft)
                     </span>
                   </div>
                   <div className="rep-metric">
                     <span className="rep-m-label">Crop & Yield</span>
-                    <span className="rep-m-val font-mono font-bold text-emerald">
+                    <span className="rep-m-val tabular-nums font-bold text-field">
                       {report.cropSown} ({report.actualYieldQtl} qtl/ac)
                     </span>
                   </div>
@@ -420,12 +420,12 @@ export const FarmerReportLoop: React.FC<FarmerReportLoopProps> = ({
 
                 <div className="rep-tags-row">
                   {report.addedExtraPipes && (
-                    <span className="tag-warning">⚠️ Motor Lowered (Extra Pipes)</span>
+                    <span className="tag text-caution">⚠️ Motor Lowered (Extra Pipes)</span>
                   )}
                   {report.motorBurnoutIssue && (
-                    <span className="tag-danger">🔥 Pump Burnout Reported</span>
+                    <span className="tag text-alert">🔥 Pump Burnout Reported</span>
                   )}
-                  <span className="tag-quality">💧 {report.waterQuality}</span>
+                  <span className="tag text-water">💧 {report.waterQuality}</span>
                 </div>
 
                 <div className="rep-card-bottom">

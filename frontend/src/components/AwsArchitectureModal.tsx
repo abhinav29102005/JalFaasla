@@ -2,15 +2,7 @@ import React, { useState } from 'react';
 import { 
   X, 
   Server, 
-  Layers, 
-  Cpu, 
-  Database, 
-  Cloud, 
-  Bell, 
-  Search, 
-  Activity, 
-  CheckCircle2,
-  ExternalLink
+  CheckCircle2
 } from 'lucide-react';
 import { AWS_ARCHITECTURE_DATA, AwsServiceDetail } from '../data/awsArchitectureData';
 
@@ -32,7 +24,7 @@ export const AwsArchitectureModal: React.FC<AwsArchitectureModalProps> = ({
       <div className="modal-container aws-modal" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
           <div className="modal-title-row">
-            <Server className="text-amber" size={24} />
+            <Server className="text-caution" size={24} />
             <div>
               <h3 className="modal-title">AWS Production Architecture Blueprint</h3>
               <span className="modal-subtitle text-xs text-muted">
@@ -85,9 +77,9 @@ export const AwsArchitectureModal: React.FC<AwsArchitectureModalProps> = ({
                     >
                       <div className="service-name-row">
                         <span className="service-name font-bold">{item.serviceName}</span>
-                        <span className="service-cat-badge text-xs">{item.category}</span>
+                        <span className="tag text-xs">{item.category}</span>
                       </div>
-                      <span className="service-badge-pill">{item.awsIconBadge}</span>
+                      <span className="tag">{item.awsIconBadge}</span>
                     </button>
                   );
                 })}
@@ -97,7 +89,7 @@ export const AwsArchitectureModal: React.FC<AwsArchitectureModalProps> = ({
             {/* Selected Service Detail on Right */}
             <div className="aws-detail-panel">
               <div className="detail-panel-header">
-                <span className="detail-cat-tag">{selectedService.category}</span>
+                <span className="tag">{selectedService.category}</span>
                 <h4 className="detail-service-title font-bold">{selectedService.serviceName}</h4>
               </div>
 
@@ -107,7 +99,7 @@ export const AwsArchitectureModal: React.FC<AwsArchitectureModalProps> = ({
               </div>
 
               <div className="detail-section highlight-section">
-                <h5 className="detail-section-label text-emerald">Punjab Agricultural Scaling Impact:</h5>
+                <h5 className="detail-section-label text-field">Punjab Agricultural Scaling Impact:</h5>
                 <p className="detail-text font-bold">{selectedService.punjabScaleMetric}</p>
               </div>
 
@@ -116,8 +108,8 @@ export const AwsArchitectureModal: React.FC<AwsArchitectureModalProps> = ({
                 <p className="detail-text">{selectedService.keyFeature}</p>
               </div>
 
-              <div className="aws-ready-badge">
-                <CheckCircle2 size={16} className="text-emerald" />
+              <div className="tag">
+                <CheckCircle2 size={16} className="text-field" />
                 <span>AWS Hackathon Qualified: Ready for Amplify Hosting & Lambda Deploy</span>
               </div>
             </div>

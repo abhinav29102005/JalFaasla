@@ -42,7 +42,7 @@ export const CropFitComparison: React.FC<CropFitComparisonProps> = ({
 
   return (
     <div className="cropfit-comparison-section">
-      {/* Punchline Header Bar - Flat surface, no gradient */}
+      {/* Punchline Header Bar - Flat surface */}
       <div className="punchline-flat-card">
         <div className="punchline-top-row">
           <span className="punchline-subtitle-label">
@@ -92,7 +92,7 @@ export const CropFitComparison: React.FC<CropFitComparisonProps> = ({
             </span>
           </div>
           <div className="metric-number-display">
-            <span className="metric-large-number font-mono">
+            <span className="metric-large-number tabular-nums">
               {activePlan.tubewellHoursSaved}
             </span>
             <span className="metric-unit-text">{currentLang === 'pa' ? 'ਘੰਟੇ' : 'hours'}</span>
@@ -110,7 +110,7 @@ export const CropFitComparison: React.FC<CropFitComparisonProps> = ({
             </span>
           </div>
           <div className="metric-number-display">
-            <span className="metric-large-number metric-green-number font-mono">
+            <span className="metric-large-number metric-green-number tabular-nums">
               ₹{(activePlan.costSavedInr ?? 0).toLocaleString('en-IN')}
             </span>
           </div>
@@ -127,7 +127,7 @@ export const CropFitComparison: React.FC<CropFitComparisonProps> = ({
             </span>
           </div>
           <div className="metric-number-display">
-            <span className="metric-large-number metric-teal-number font-mono">
+            <span className="metric-large-number metric-teal-number tabular-nums">
               {activePlan.waterSavedPercent ?? 0}%
             </span>
             <span className="metric-unit-text">{currentLang === 'pa' ? 'ਬੱਚਤ' : 'saved'}</span>
@@ -145,7 +145,7 @@ export const CropFitComparison: React.FC<CropFitComparisonProps> = ({
             </span>
           </div>
           <div className="metric-number-display">
-            <span className="metric-large-number font-mono">
+            <span className="metric-large-number tabular-nums">
               ₹{(activePlan.netReturnInr ?? 0).toLocaleString('en-IN')}
             </span>
           </div>
@@ -195,19 +195,19 @@ export const CropFitComparison: React.FC<CropFitComparisonProps> = ({
           <div className="split-specs-list">
             <div className="split-spec-row">
               <span className="spec-label">{currentLang === 'pa' ? 'ਟਿਊਬਵੈੱਲ ਚੱਲਣ ਦੇ ਘੰਟੇ:' : 'Tube-well run time:'}</span>
-              <span className="spec-value font-mono">{baseline.tubewellHoursTotal} {currentLang === 'pa' ? 'ਘੰਟੇ' : 'hours'}</span>
+              <span className="spec-value tabular-nums">{baseline.tubewellHoursTotal} {currentLang === 'pa' ? 'ਘੰਟੇ' : 'hours'}</span>
             </div>
             <div className="split-spec-row">
               <span className="spec-label">{currentLang === 'pa' ? 'ਡੀਜ਼ਲ / ਬਿਜਲੀ ਖਰਚਾ:' : 'Fuel / electricity cost:'}</span>
-              <span className="spec-value font-mono">₹{(baseline.operationalCostInr ?? 0).toLocaleString('en-IN')}</span>
+              <span className="spec-value tabular-nums">₹{(baseline.operationalCostInr ?? 0).toLocaleString('en-IN')}</span>
             </div>
             <div className="split-spec-row">
               <span className="spec-label">{currentLang === 'pa' ? 'ਧਰਤੀ ਹੇਠੋਂ ਕੱਢਿਆ ਪਾਣੀ:' : 'Groundwater pumped:'}</span>
-              <span className="spec-value font-mono">{(baseline.waterUsedM3Total ?? 0).toLocaleString('en-IN')} m³</span>
+              <span className="spec-value tabular-nums">{(baseline.waterUsedM3Total ?? 0).toLocaleString('en-IN')} m³</span>
             </div>
             <div className="split-spec-row">
               <span className="spec-label">{currentLang === 'pa' ? 'ਪੱਕਣ ਦਾ ਸਮਾਂ:' : 'Crop maturity period:'}</span>
-              <span className="spec-value font-mono">{baseline.durationDays} {currentLang === 'pa' ? 'ਦਿਨ' : 'days'}</span>
+              <span className="spec-value tabular-nums">{baseline.durationDays} {currentLang === 'pa' ? 'ਦਿਨ' : 'days'}</span>
             </div>
             <div className="split-spec-row">
               <span className="spec-label">{currentLang === 'pa' ? 'ਪਰਾਲੀ ਦੀ ਸਮੱਸਿਆ:' : 'Stubble management:'}</span>
@@ -217,7 +217,7 @@ export const CropFitComparison: React.FC<CropFitComparisonProps> = ({
             </div>
             <div className="split-spec-row split-spec-total">
               <span className="spec-label">{currentLang === 'pa' ? 'ਕਿਸਾਨ ਦੀ ਕਮਾਈ:' : 'Net farm return:'}</span>
-              <span className="spec-value font-mono font-bold">₹{(baseline.netReturnInr ?? 0).toLocaleString('en-IN')}</span>
+              <span className="spec-value tabular-nums font-bold">₹{(baseline.netReturnInr ?? 0).toLocaleString('en-IN')}</span>
             </div>
           </div>
 
@@ -245,25 +245,25 @@ export const CropFitComparison: React.FC<CropFitComparisonProps> = ({
           <div className="split-specs-list">
             <div className="split-spec-row highlight-row">
               <span className="spec-label">{currentLang === 'pa' ? 'ਟਿਊਬਵੈੱਲ ਚੱਲਣ ਦੇ ਘੰਟੇ:' : 'Tube-well run time:'}</span>
-              <span className="spec-value font-mono font-bold">
+              <span className="spec-value tabular-nums font-bold">
                 {activePlan.tubewellHoursTotal} {currentLang === 'pa' ? 'ਘੰਟੇ' : 'hours'} ({activePlan.tubewellHoursSaved} {currentLang === 'pa' ? 'ਘੰਟੇ ਬਚੇ' : 'hrs saved'})
               </span>
             </div>
             <div className="split-spec-row highlight-row">
               <span className="spec-label">{currentLang === 'pa' ? 'ਡੀਜ਼ਲ / ਬਿਜਲੀ ਖਰਚਾ:' : 'Fuel / electricity cost:'}</span>
-              <span className="spec-value font-mono font-bold text-field">
+              <span className="spec-value tabular-nums font-bold text-field">
                 ₹{(activePlan.operationalCostInr ?? 0).toLocaleString('en-IN')} (₹{(activePlan.costSavedInr ?? 0).toLocaleString('en-IN')} {currentLang === 'pa' ? 'ਬਚੇ' : 'saved'})
               </span>
             </div>
             <div className="split-spec-row highlight-row">
               <span className="spec-label">{currentLang === 'pa' ? 'ਧਰਤੀ ਹੇਠੋਂ ਕੱਢਿਆ ਪਾਣੀ:' : 'Groundwater pumped:'}</span>
-              <span className="spec-value font-mono font-bold text-water">
+              <span className="spec-value tabular-nums font-bold text-water">
                 {(activePlan.waterUsedM3Total ?? 0).toLocaleString('en-IN')} m³ ({activePlan.waterSavedPercent ?? 0}% {currentLang === 'pa' ? 'ਬੱਚਤ' : 'saved'})
               </span>
             </div>
             <div className="split-spec-row">
               <span className="spec-label">{currentLang === 'pa' ? 'ਪੱਕਣ ਦਾ ਸਮਾਂ:' : 'Crop maturity period:'}</span>
-              <span className="spec-value font-mono text-field">
+              <span className="spec-value tabular-nums text-field">
                 {activePlan.durationDays} {currentLang === 'pa' ? 'ਦਿਨ (ਸਤੰਬਰ ਅਖੀਰ ਕਟਾਈ)' : 'days (late September harvest)'}
               </span>
             </div>
@@ -275,7 +275,7 @@ export const CropFitComparison: React.FC<CropFitComparisonProps> = ({
             </div>
             <div className="split-spec-row split-spec-total highlight-row">
               <span className="spec-label">{currentLang === 'pa' ? 'ਕਿਸਾਨ ਦੀ ਕਮਾਈ:' : 'Net farm return:'}</span>
-              <span className="spec-value font-mono font-bold text-field">
+              <span className="spec-value tabular-nums font-bold text-field">
                 ₹{(activePlan.netReturnInr ?? 0).toLocaleString('en-IN')} (+₹{((activePlan.netReturnInr ?? 0) - (baseline.netReturnInr ?? 0)).toLocaleString('en-IN')} {currentLang === 'pa' ? 'ਵੱਧ ਮੁਨਾਫ਼ਾ' : 'gain'})
               </span>
             </div>
