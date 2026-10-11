@@ -9,6 +9,7 @@ import {
   Waves
 } from "lucide-react";
 
+import punjabDistrictsGeoJson from "../data/punjab_districts.json";
 import { PunjabBlock, PUNJAB_DISTRICTS } from "../data/punjabData";
 import { Language } from "../data/translations";
 
@@ -18,268 +19,228 @@ interface PunjabGisMapProps {
   onSelectBlock: (block: PunjabBlock) => void;
 }
 
-interface GisBlockLocation {
+// Hydrological data for all official Punjab districts (CGWB 2024-26 Assessment)
+interface DistrictGroundwaterData {
+  name: string;
+  namePa: string;
+  category: "Over-Exploited" | "Critical" | "Semi-Critical" | "Safe";
+  stagePercent: number;
+  waterDepthM: number;
+  annualFallCm: number;
+  rechargeType: string;
+}
+
+const DISTRICT_HYDROLOGY: Record<string, DistrictGroundwaterData> = {
+  "Ludhiana": {
+    name: "Ludhiana",
+    namePa: "ਲੁਧਿਆਣਾ",
+    category: "Over-Exploited",
+    stagePercent: 212,
+    waterDepthM: 22.4,
+    annualFallCm: 59,
+    rechargeType: "Central Alluvial Aquifer (Severe Pumping Stress)"
+  },
+  "Sangrur": {
+    name: "Sangrur",
+    namePa: "ਸੰਗਰੂਰ",
+    category: "Over-Exploited",
+    stagePercent: 284,
+    waterDepthM: 32.4,
+    annualFallCm: 76,
+    rechargeType: "Deep Quaternary Strata (>100m Depletion)"
+  },
+  "Barnala": {
+    name: "Barnala",
+    namePa: "ਬਰਨਾਲਾ",
+    category: "Over-Exploited",
+    stagePercent: 242,
+    waterDepthM: 27.5,
+    annualFallCm: 68,
+    rechargeType: "Malwa Alluvial Basin"
+  },
+  "Moga": {
+    name: "Moga",
+    namePa: "ਮੋਗਾ",
+    category: "Over-Exploited",
+    stagePercent: 235,
+    waterDepthM: 29.5,
+    annualFallCm: 76,
+    rechargeType: "Western Malwa Sandy Loam"
+  },
+  "Patiala": {
+    name: "Patiala",
+    namePa: "ਪਟਿਆਲਾ",
+    category: "Over-Exploited",
+    stagePercent: 212,
+    waterDepthM: 23.5,
+    annualFallCm: 60,
+    rechargeType: "Ghaggar & Sirhind Basin"
+  },
+  "Jalandhar": {
+    name: "Jalandhar",
+    namePa: "ਜਲੰਧਰ",
+    category: "Over-Exploited",
+    stagePercent: 182,
+    waterDepthM: 19.5,
+    annualFallCm: 52,
+    rechargeType: "Bist Doab Alluvium"
+  },
+  "Kapurthala": {
+    name: "Kapurthala",
+    namePa: "ਕਪੂਰਥਲਾ",
+    category: "Over-Exploited",
+    stagePercent: 170,
+    waterDepthM: 18.2,
+    annualFallCm: 48,
+    rechargeType: "Beas Riverine Lowlands"
+  },
+  "Fatehgarh Sahib": {
+    name: "Fatehgarh Sahib",
+    namePa: "ਫ਼ਤਹਿਗੜ੍ਹ ਸਾਹਿਬ",
+    category: "Over-Exploited",
+    stagePercent: 185,
+    waterDepthM: 20.1,
+    annualFallCm: 53,
+    rechargeType: "Sirhind Canal Command Zone"
+  },
+  "Bathinda": {
+    name: "Bathinda",
+    namePa: "ਬਠਿੰਡਾ",
+    category: "Critical",
+    stagePercent: 122,
+    waterDepthM: 14.8,
+    annualFallCm: 32,
+    rechargeType: "Canal-Fed Cotton Belt"
+  },
+  "Firozpur": {
+    name: "Firozpur",
+    namePa: "ਫਿਰੋਜ਼ਪੁਰ",
+    category: "Critical",
+    stagePercent: 115,
+    waterDepthM: 12.2,
+    annualFallCm: 28,
+    rechargeType: "Sutlej Border Plain"
+  },
+  "Faridkot": {
+    name: "Faridkot",
+    namePa: "ਫ਼ਰੀਦਕੋਟ",
+    category: "Critical",
+    stagePercent: 120,
+    waterDepthM: 13.5,
+    annualFallCm: 30,
+    rechargeType: "Southwest Alluvial Loam"
+  },
+  "Mansa": {
+    name: "Mansa",
+    namePa: "ਮਾਨਸਾ",
+    category: "Over-Exploited",
+    stagePercent: 160,
+    waterDepthM: 17.6,
+    annualFallCm: 44,
+    rechargeType: "Southern Semi-Arid Alluvium"
+  },
+  "Muktsar": {
+    name: "Sri Muktsar Sahib",
+    namePa: "ਸ੍ਰੀ ਮੁਕਤਸਰ ਸਾਹਿਬ",
+    category: "Semi-Critical",
+    stagePercent: 88,
+    waterDepthM: 9.8,
+    annualFallCm: 18,
+    rechargeType: "Sirhind Feeder Canal Bank"
+  },
+  "Amritsar": {
+    name: "Amritsar",
+    namePa: "ਅੰਮ੍ਰਿਤਸਰ",
+    category: "Over-Exploited",
+    stagePercent: 155,
+    waterDepthM: 16.4,
+    annualFallCm: 42,
+    rechargeType: "Upper Bari Doab Basin"
+  },
+  "Tarn Taran": {
+    name: "Tarn Taran",
+    namePa: "ਤਰਨ ਤਾਰਨ",
+    category: "Over-Exploited",
+    stagePercent: 168,
+    waterDepthM: 17.8,
+    annualFallCm: 46,
+    rechargeType: "Harike Confluence Plain"
+  },
+  "Rupnagar": {
+    name: "Rupnagar (Ropar)",
+    namePa: "ਰੂਪਨਗਰ",
+    category: "Semi-Critical",
+    stagePercent: 78,
+    waterDepthM: 10.2,
+    annualFallCm: 22,
+    rechargeType: "Sutlej River Gateway & Foothills"
+  },
+  "Sahibzada Ajit Singh Nagar": {
+    name: "SAS Nagar (Mohali)",
+    namePa: "ਮੋਹਾਲੀ",
+    category: "Semi-Critical",
+    stagePercent: 82,
+    waterDepthM: 11.5,
+    annualFallCm: 25,
+    rechargeType: "Shivalik Piedmont Zone"
+  },
+  "Shahid Bhagat Singh Nagar": {
+    name: "SBS Nagar (Nawanshahr)",
+    namePa: "ਨਵਾਂਸ਼ਹਿਰ",
+    category: "Critical",
+    stagePercent: 95,
+    waterDepthM: 12.8,
+    annualFallCm: 29,
+    rechargeType: "Bist Doab Alluvium"
+  },
+  "Hoshiarpur": {
+    name: "Hoshiarpur (Kandi Belt)",
+    namePa: "ਹੁਸ਼ਿਆਰਪੁਰ (ਕੰਢੀ)",
+    category: "Safe",
+    stagePercent: 62,
+    waterDepthM: 8.5,
+    annualFallCm: 15,
+    rechargeType: "Natural Shivalik Rain Recharge Zone"
+  },
+  "Gurdaspur": {
+    name: "Gurdaspur",
+    namePa: "ਗੁਰਦਾਸਪੁਰ",
+    category: "Safe",
+    stagePercent: 68,
+    waterDepthM: 8.9,
+    annualFallCm: 16,
+    rechargeType: "Ravi-Beas Submontane Watershed"
+  }
+};
+
+// Sub-block Centroids for Ludhiana Central Alluvial Belt
+interface LudhianaBlockPin {
   id: string;
   name: string;
   namePa: string;
-  district: string;
-  center: [number, number]; // [lat, lng]
-  polygon: [number, number][]; // Boundary catchment polygon
-  category: "Over-Exploited" | "Critical" | "Semi-Critical" | "Safe";
+  coords: [number, number];
+  category: "Over-Exploited" | "Critical";
   stagePercent: number;
   depthM: number;
   annualDropCm: number;
-  tubewellsPerSqKm: number;
 }
 
-// True geographic coordinates for Central Punjab Alluvial Belt & surrounding agricultural blocks
-const GIS_BLOCKS: GisBlockLocation[] = [
-  // --- Ludhiana Central Belt ---
-  {
-    id: "jagraon",
-    name: "Jagraon",
-    namePa: "ਜਗਰਾਓਂ",
-    district: "Ludhiana",
-    center: [30.7853, 75.4740],
-    polygon: [
-      [30.85, 75.38], [30.86, 75.54], [30.77, 75.58], [30.71, 75.51], [30.72, 75.39]
-    ],
-    category: "Over-Exploited",
-    stagePercent: 188,
-    depthM: 18.4,
-    annualDropCm: 53,
-    tubewellsPerSqKm: 42
-  },
-  {
-    id: "sidhwan-bet",
-    name: "Sidhwan Bet",
-    namePa: "ਸਿੱਧਵਾਂ ਬੇਟ",
-    district: "Ludhiana",
-    center: [30.9312, 75.5215],
-    polygon: [
-      [30.98, 75.42], [30.99, 75.62], [30.92, 75.60], [30.88, 75.48], [30.91, 75.41]
-    ],
-    category: "Critical",
-    stagePercent: 132,
-    depthM: 12.8,
-    annualDropCm: 36,
-    tubewellsPerSqKm: 32
-  },
-  {
-    id: "ludhiana-1",
-    name: "Ludhiana-1 (East)",
-    namePa: "ਲੁਧਿਆਣਾ-1 (ਪੂਰਬੀ)",
-    district: "Ludhiana",
-    center: [30.9110, 75.9100],
-    polygon: [
-      [30.97, 75.84], [30.98, 75.99], [30.88, 76.01], [30.85, 75.86]
-    ],
-    category: "Over-Exploited",
-    stagePercent: 194,
-    depthM: 19.1,
-    annualDropCm: 54,
-    tubewellsPerSqKm: 48
-  },
-  {
-    id: "ludhiana-2",
-    name: "Ludhiana-2 (West)",
-    namePa: "ਲੁਧਿਆਣਾ-2 (ਪੱਛਮੀ)",
-    district: "Ludhiana",
-    center: [30.8700, 75.7900],
-    polygon: [
-      [30.93, 75.72], [30.94, 75.85], [30.83, 75.87], [30.81, 75.73]
-    ],
-    category: "Over-Exploited",
-    stagePercent: 215,
-    depthM: 21.6,
-    annualDropCm: 59,
-    tubewellsPerSqKm: 51
-  },
-  {
-    id: "dehlon",
-    name: "Dehlon",
-    namePa: "ਡੇਹਲੋਂ",
-    district: "Ludhiana",
-    center: [30.7686, 75.8756],
-    polygon: [
-      [30.83, 75.80], [30.83, 75.95], [30.72, 75.96], [30.71, 75.81]
-    ],
-    category: "Over-Exploited",
-    stagePercent: 238,
-    depthM: 24.3,
-    annualDropCm: 64,
-    tubewellsPerSqKm: 56
-  },
-  {
-    id: "khanna",
-    name: "Khanna",
-    namePa: "ਖੰਨਾ",
-    district: "Ludhiana",
-    center: [30.7027, 76.2163],
-    polygon: [
-      [30.77, 76.13], [30.78, 76.29], [30.65, 76.30], [30.64, 76.14]
-    ],
-    category: "Over-Exploited",
-    stagePercent: 192,
-    depthM: 19.8,
-    annualDropCm: 55,
-    tubewellsPerSqKm: 45
-  },
-  {
-    id: "samrala",
-    name: "Samrala",
-    namePa: "ਸਮਰਾਲਾ",
-    district: "Ludhiana",
-    center: [30.8359, 76.1927],
-    polygon: [
-      [30.90, 76.11], [30.91, 76.27], [30.79, 76.28], [30.78, 76.12]
-    ],
-    category: "Over-Exploited",
-    stagePercent: 165,
-    depthM: 16.7,
-    annualDropCm: 48,
-    tubewellsPerSqKm: 38
-  },
-  {
-    id: "doraha",
-    name: "Doraha",
-    namePa: "ਦੋਰਾਹਾ",
-    district: "Ludhiana",
-    center: [30.8038, 76.0270],
-    polygon: [
-      [30.86, 75.96], [30.87, 76.11], [30.75, 76.11], [30.74, 75.96]
-    ],
-    category: "Over-Exploited",
-    stagePercent: 172,
-    depthM: 17.6,
-    annualDropCm: 49,
-    tubewellsPerSqKm: 40
-  },
-  {
-    id: "raikot",
-    name: "Raikot",
-    namePa: "ਰਾਏਕੋਟ",
-    district: "Ludhiana",
-    center: [30.6508, 75.6022],
-    polygon: [
-      [30.72, 75.52], [30.72, 75.68], [30.58, 75.68], [30.58, 75.53]
-    ],
-    category: "Over-Exploited",
-    stagePercent: 218,
-    depthM: 22.4,
-    annualDropCm: 61,
-    tubewellsPerSqKm: 49
-  },
-  {
-    id: "sudhar",
-    name: "Sudhar",
-    namePa: "ਸੁਧਾਰ",
-    district: "Ludhiana",
-    center: [30.7554, 75.6601],
-    polygon: [
-      [30.81, 75.59], [30.81, 75.74], [30.70, 75.74], [30.70, 75.60]
-    ],
-    category: "Over-Exploited",
-    stagePercent: 186,
-    depthM: 19.3,
-    annualDropCm: 53,
-    tubewellsPerSqKm: 44
-  },
-  {
-    id: "machhiwara",
-    name: "Machhiwara",
-    namePa: "ਮਾਛੀਵਾੜਾ",
-    district: "Ludhiana",
-    center: [30.9125, 76.2005],
-    polygon: [
-      [30.98, 76.12], [30.99, 76.28], [30.88, 76.28], [30.87, 76.13]
-    ],
-    category: "Critical",
-    stagePercent: 148,
-    depthM: 14.5,
-    annualDropCm: 41,
-    tubewellsPerSqKm: 35
-  },
-  {
-    id: "pakhowal",
-    name: "Pakhowal",
-    namePa: "ਪੱਖੋਵਾਲ",
-    district: "Ludhiana",
-    center: [30.6974, 75.7691],
-    polygon: [
-      [30.76, 75.70], [30.76, 75.84], [30.64, 75.85], [30.63, 75.71]
-    ],
-    category: "Over-Exploited",
-    stagePercent: 204,
-    depthM: 20.8,
-    annualDropCm: 58,
-    tubewellsPerSqKm: 47
-  },
-
-  // --- Surrounding Key Punjab Agricultural Blocks ---
-  {
-    id: "sangrur-central",
-    name: "Sangrur / Dhuri",
-    namePa: "ਸੰਗਰੂਰ / ਧੂਰੀ",
-    district: "Sangrur",
-    center: [30.2858, 75.8421],
-    polygon: [
-      [30.40, 75.74], [30.40, 75.95], [30.20, 75.95], [30.20, 75.74]
-    ],
-    category: "Over-Exploited",
-    stagePercent: 284,
-    depthM: 32.4,
-    annualDropCm: 76,
-    tubewellsPerSqKm: 62
-  },
-  {
-    id: "jalandhar-east",
-    name: "Jalandhar East",
-    namePa: "ਜਲੰਧਰ ਪੂਰਬੀ",
-    district: "Jalandhar",
-    center: [31.3260, 75.5762],
-    polygon: [
-      [31.42, 75.48], [31.43, 75.68], [31.25, 75.68], [31.24, 75.48]
-    ],
-    category: "Over-Exploited",
-    stagePercent: 182,
-    depthM: 19.5,
-    annualDropCm: 52,
-    tubewellsPerSqKm: 45
-  },
-  {
-    id: "moga-1",
-    name: "Moga West",
-    namePa: "ਮੋਗਾ ਪੱਛਮੀ",
-    district: "Moga",
-    center: [30.8165, 75.1717],
-    polygon: [
-      [30.90, 75.05], [30.91, 75.28], [30.72, 75.28], [30.71, 75.06]
-    ],
-    category: "Over-Exploited",
-    stagePercent: 235,
-    depthM: 29.5,
-    annualDropCm: 76,
-    tubewellsPerSqKm: 54
-  },
-  {
-    id: "hoshiarpur-1",
-    name: "Kandi Belt (Hoshiarpur)",
-    namePa: "ਕੰਢੀ ਇਲਾਕਾ (ਹੁਸ਼ਿਆਰਪੁਰ)",
-    district: "Hoshiarpur",
-    center: [31.5273, 75.9149],
-    polygon: [
-      [31.62, 75.78], [31.65, 76.05], [31.42, 76.05], [31.40, 75.80]
-    ],
-    category: "Safe",
-    stagePercent: 62,
-    depthM: 8.5,
-    annualDropCm: 15,
-    tubewellsPerSqKm: 18
-  }
+const LUDHIANA_BLOCK_PINS: LudhianaBlockPin[] = [
+  { id: "jagraon", name: "Jagraon", namePa: "ਜਗਰਾਓਂ", coords: [30.7853, 75.4740], category: "Over-Exploited", stagePercent: 188, depthM: 18.4, annualDropCm: 53 },
+  { id: "sidhwan-bet", name: "Sidhwan Bet", namePa: "ਸਿੱਧਵਾਂ ਬੇਟ", coords: [30.9312, 75.5215], category: "Critical", stagePercent: 132, depthM: 12.8, annualDropCm: 36 },
+  { id: "ludhiana-1", name: "Ludhiana-1 (East)", namePa: "ਲੁਧਿਆਣਾ-1", coords: [30.9110, 75.8900], category: "Over-Exploited", stagePercent: 194, depthM: 19.1, annualDropCm: 54 },
+  { id: "ludhiana-2", name: "Ludhiana-2 (West)", namePa: "ਲੁਧਿਆਣਾ-2", coords: [30.8700, 75.7900], category: "Over-Exploited", stagePercent: 215, depthM: 21.6, annualDropCm: 59 },
+  { id: "dehlon", name: "Dehlon", namePa: "ਡੇਹਲੋਂ", coords: [30.7686, 75.8756], category: "Over-Exploited", stagePercent: 238, depthM: 24.3, annualDropCm: 64 },
+  { id: "khanna", name: "Khanna", namePa: "ਖੰਨਾ", coords: [30.7027, 76.2163], category: "Over-Exploited", stagePercent: 192, depthM: 19.8, annualDropCm: 55 },
+  { id: "samrala", name: "Samrala", namePa: "ਸਮਰਾਲਾ", coords: [30.8359, 76.1927], category: "Over-Exploited", stagePercent: 165, depthM: 16.7, annualDropCm: 48 },
+  { id: "doraha", name: "Doraha", namePa: "ਦੋਰਾਹਾ", coords: [30.8038, 76.0270], category: "Over-Exploited", stagePercent: 172, depthM: 17.6, annualDropCm: 49 },
+  { id: "raikot", name: "Raikot", namePa: "ਰਾਏਕੋਟ", coords: [30.6508, 75.6022], category: "Over-Exploited", stagePercent: 218, depthM: 22.4, annualDropCm: 61 },
+  { id: "sudhar", name: "Sudhar", namePa: "ਸੁਧਾਰ", coords: [30.7554, 75.6601], category: "Over-Exploited", stagePercent: 186, depthM: 19.3, annualDropCm: 53 },
+  { id: "machhiwara", name: "Machhiwara", namePa: "ਮਾਛੀਵਾੜਾ", coords: [30.9125, 76.2005], category: "Critical", stagePercent: 148, depthM: 14.5, annualDropCm: 41 },
+  { id: "pakhowal", name: "Pakhowal", namePa: "ਪੱਖੋਵਾਲ", coords: [30.6974, 75.7691], category: "Over-Exploited", stagePercent: 204, depthM: 20.8, annualDropCm: 58 }
 ];
 
-// Sutlej River path across northern Punjab
+// Sutlej River natural path
 const SUTLEJ_RIVER_COORDS: [number, number][] = [
   [31.28, 76.53],
   [31.18, 76.32],
@@ -290,15 +251,6 @@ const SUTLEJ_RIVER_COORDS: [number, number][] = [
   [31.14, 74.96]
 ];
 
-// Major Sirhind Canal Network
-const SIRHIND_CANAL_COORDS: [number, number][] = [
-  [31.02, 76.45],
-  [30.84, 76.22],
-  [30.73, 75.96],
-  [30.56, 75.60],
-  [30.35, 75.25]
-];
-
 export const PunjabGisMap: React.FC<PunjabGisMapProps> = ({
   currentLang,
   selectedBlock,
@@ -306,15 +258,29 @@ export const PunjabGisMap: React.FC<PunjabGisMapProps> = ({
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
-  const layersGroupRef = useRef<L.FeatureGroup | null>(null);
-  const polygonsMapRef = useRef<Map<string, L.Polygon>>(new Map());
+  const geoJsonLayerRef = useRef<L.GeoJSON | null>(null);
+  const blockMarkersLayerRef = useRef<L.FeatureGroup | null>(null);
 
   const [activeTileLayer, setActiveTileLayer] = useState<"light" | "satellite" | "osm">("light");
-  const [hoveredBlock, setHoveredBlock] = useState<GisBlockLocation | null>(null);
-
-  const currentGisBlock = GIS_BLOCKS.find(b => b.id === selectedBlock.id) || 
-    GIS_BLOCKS.find(b => b.name.toLowerCase().includes(selectedBlock.name.toLowerCase())) ||
-    GIS_BLOCKS[0];
+  const [activeFeature, setActiveFeature] = useState<{
+    title: string;
+    titlePa: string;
+    subDistrictOrDistrict: string;
+    category: "Over-Exploited" | "Critical" | "Semi-Critical" | "Safe";
+    stagePercent: number;
+    depthM: number;
+    annualFallCm: number;
+    rechargeNote?: string;
+  }>({
+    title: selectedBlock.name,
+    titlePa: selectedBlock.namePa,
+    subDistrictOrDistrict: "Ludhiana District Block",
+    category: selectedBlock.cgwbCategory as any || "Over-Exploited",
+    stagePercent: selectedBlock.stageOfExtractionPercent || 188,
+    depthM: selectedBlock.waterTableDepthM || 18.4,
+    annualFallCm: selectedBlock.annualFallCm || 53,
+    rechargeNote: selectedBlock.localObservations
+  });
 
   const getCategoryColor = (cat: string) => {
     switch (cat) {
@@ -330,10 +296,11 @@ export const PunjabGisMap: React.FC<PunjabGisMapProps> = ({
     if (!mapContainerRef.current) return;
     if (mapInstanceRef.current) return;
 
+    // Center on Punjab Central Alluvial Belt (Ludhiana)
     const map = L.map(mapContainerRef.current, {
-      center: [30.82, 75.75],
-      zoom: 9,
-      minZoom: 8,
+      center: [30.90, 75.75],
+      zoom: 8.5,
+      minZoom: 7.5,
       maxZoom: 13,
       zoomControl: false,
       attributionControl: false,
@@ -343,88 +310,169 @@ export const PunjabGisMap: React.FC<PunjabGisMapProps> = ({
 
     L.control.zoom({ position: "topright" }).addTo(map);
 
-    const baseTile = L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+    // Default CartoDB Light Tile Layer
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
       maxZoom: 19,
       subdomains: "abcd",
-    });
-    baseTile.addTo(map);
+    }).addTo(map);
 
-    const featureGroup = L.featureGroup().addTo(map);
-    layersGroupRef.current = featureGroup;
-
-    // Sutlej River
-    const sutlejPolyline = L.polyline(SUTLEJ_RIVER_COORDS, {
+    // 1. Natural Sutlej River Polyline
+    const river = L.polyline(SUTLEJ_RIVER_COORDS, {
       color: "#0284C7",
-      weight: 5,
+      weight: 4.5,
       opacity: 0.85,
-    }).addTo(featureGroup);
+    }).addTo(map);
 
-    sutlejPolyline.bindTooltip(
-      "<strong>🌊 Sutlej River (ਸਤਲੁਜ ਦਰਿਆ)</strong><br/><span style='font-size:11px;'>Northern Groundwater Recharge River</span>",
-      { sticky: true, className: "gis-river-tooltip" }
+    river.bindTooltip(
+      "<div style='font-size:12px; font-weight:700;'>🌊 Sutlej River (ਸਤਲੁਜ ਦਰਿਆ)</div><span style='font-size:11px; color:#475569;'>Northern Floodplain & Groundwater Recharge Axis</span>",
+      { sticky: true }
     );
 
-    // Sirhind Canal
-    const canalPolyline = L.polyline(SIRHIND_CANAL_COORDS, {
-      color: "#0EA5E9",
-      weight: 2.5,
-      opacity: 0.7,
-      dashArray: "6, 6",
-    }).addTo(featureGroup);
+    // 2. Render Official Punjab District Boundaries GeoJSON
+    const geoJsonLayer = L.geoJSON(punjabDistrictsGeoJson as any, {
+      style: (feature) => {
+        const distName = feature?.properties?.district || "";
+        const hydro = DISTRICT_HYDROLOGY[distName] || {
+          category: "Over-Exploited",
+          stagePercent: 180,
+        };
 
-    canalPolyline.bindTooltip(
-      "<strong>Sirhind Canal (ਸਰਹਿੰਦ ਨਹਿਰ)</strong><br/><span style='font-size:11px;'>Primary Irrigation Canal Network</span>",
-      { sticky: true, className: "gis-river-tooltip" }
-    );
+        const isLudhiana = distName === "Ludhiana";
+        const isSelected = selectedBlock.name.toLowerCase().includes(distName.toLowerCase()) ||
+                           (distName === "Ludhiana" && selectedBlock.cgwbCategory !== undefined);
 
-    // Block Polygons & Markers
-    GIS_BLOCKS.forEach(block => {
+        const color = getCategoryColor(hydro.category);
+
+        return {
+          color: isSelected ? "#E7B422" : color,
+          weight: isSelected ? 3.5 : (isLudhiana ? 2.5 : 1.2),
+          fillColor: color,
+          fillOpacity: isSelected ? 0.42 : (isLudhiana ? 0.30 : 0.22),
+          dashArray: isSelected ? "4, 4" : undefined,
+        };
+      },
+      onEachFeature: (feature, layer) => {
+        const distName = feature?.properties?.district || "";
+        const hydro = DISTRICT_HYDROLOGY[distName] || {
+          name: distName,
+          namePa: distName,
+          category: "Over-Exploited",
+          stagePercent: 180,
+          waterDepthM: 19.5,
+          annualFallCm: 50,
+          rechargeType: "Alluvial Plain"
+        };
+
+        const tooltipHtml = `
+          <div style="font-family: inherit; font-size: 12px; line-height: 1.4; padding: 2px;">
+            <strong style="font-size: 13px; color: #0F172A;">${hydro.name} (${hydro.namePa})</strong><br/>
+            <span style="color: #64748B;">Official District Division</span>
+            <div style="margin-top: 4px; padding: 4px 6px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 4px;">
+              Extraction: <strong style="color: ${getCategoryColor(hydro.category)};">${hydro.stagePercent}%</strong> (${hydro.category})<br/>
+              Water Depth: <strong>${hydro.waterDepthM} m</strong> (~${Math.round(hydro.waterDepthM * 3.28)} ft)<br/>
+              Annual Fall: <strong style="color: #B91C1C;">-${hydro.annualFallCm} cm/yr</strong>
+            </div>
+            <span style="font-size: 11px; color: #059669; font-weight: 600; display: block; margin-top: 4px;">
+              👉 Click district to inspect groundwater
+            </span>
+          </div>
+        `;
+
+        layer.bindTooltip(tooltipHtml, { sticky: true });
+
+        layer.on({
+          mouseover: (e) => {
+            const l = e.target;
+            l.setStyle({ fillOpacity: 0.55, weight: 3 });
+            setActiveFeature({
+              title: hydro.name,
+              titlePa: hydro.namePa,
+              subDistrictOrDistrict: "Official Punjab District",
+              category: hydro.category,
+              stagePercent: hydro.stagePercent,
+              depthM: hydro.waterDepthM,
+              annualFallCm: hydro.annualFallCm,
+              rechargeNote: hydro.rechargeType
+            });
+          },
+          mouseout: (e) => {
+            geoJsonLayer.resetStyle(e.target);
+          },
+          click: (e) => {
+            const poly = layer as L.Polygon;
+            if (poly && typeof poly.getBounds === "function") {
+              map.fitBounds(poly.getBounds(), { padding: [20, 20], maxZoom: 10.5 });
+            }
+
+            // If Ludhiana or district with matching blocks, select default
+            let matched: PunjabBlock | undefined;
+            for (const dist of PUNJAB_DISTRICTS) {
+              if (dist.name.toLowerCase() === distName.toLowerCase()) {
+                matched = dist.blocks[0];
+                break;
+              }
+            }
+
+            if (matched) {
+              onSelectBlock(matched);
+            }
+          }
+        });
+      }
+    }).addTo(map);
+
+    geoJsonLayerRef.current = geoJsonLayer;
+
+    // 3. Render Non-Overlapping Interactive Sub-Block Circle Centroids inside Ludhiana
+    const blockMarkersGroup = L.featureGroup().addTo(map);
+    blockMarkersLayerRef.current = blockMarkersGroup;
+
+    LUDHIANA_BLOCK_PINS.forEach(block => {
       const isSelected = block.id === selectedBlock.id;
       const catColor = getCategoryColor(block.category);
 
-      const polygon = L.polygon(block.polygon, {
-        color: isSelected ? "#E7B422" : catColor,
-        weight: isSelected ? 3.5 : 1.5,
-        fillColor: catColor,
-        fillOpacity: isSelected ? 0.45 : 0.28,
-        dashArray: isSelected ? "4, 4" : undefined,
-      }).addTo(featureGroup);
+      // Subtle, clean circular marker pin - NO overlapping large rectangular cards!
+      const circleMarker = L.circleMarker(block.coords, {
+        radius: isSelected ? 8 : 6,
+        fillColor: isSelected ? "#E7B422" : catColor,
+        color: "#FFFFFF",
+        weight: isSelected ? 3 : 1.5,
+        fillOpacity: 0.95,
+      }).addTo(blockMarkersGroup);
 
-      polygonsMapRef.current.set(block.id, polygon);
-
+      // Clean, elegant label next to circle
       const labelIcon = L.divIcon({
-        className: "custom-gis-block-pin",
+        className: "gis-clean-node-label",
         html: `
-          <div class="gis-pin-bubble ${isSelected ? "selected" : ""}" style="border-color: ${catColor};">
-            <span class="pin-name">${currentLang === "pa" ? block.namePa : block.name}</span>
-            <span class="pin-stat ${block.category.toLowerCase().replace(/[^a-z]/g, "-")}">${block.stagePercent}%</span>
+          <div class="clean-node-text ${isSelected ? "selected" : ""}">
+            ${block.name} <span class="node-pct">${block.stagePercent}%</span>
           </div>
         `,
-        iconSize: [100, 36],
-        iconAnchor: [50, 18],
+        iconSize: [90, 20],
+        iconAnchor: [45, -6]
       });
 
-      const marker = L.marker(block.center, { icon: labelIcon }).addTo(featureGroup);
+      const labelMarker = L.marker(block.coords, { icon: labelIcon }).addTo(blockMarkersGroup);
 
-      const tooltipContent = `
+      const blockTooltip = `
         <div style="font-family: inherit; font-size: 12px; line-height: 1.4; padding: 2px;">
-          <strong style="font-size: 13px; color: #1E293B;">${block.name} (${block.namePa})</strong><br/>
-          <span style="color: #64748B;">District: ${block.district}</span><br/>
-          <div style="margin-top: 4px; padding: 4px 6px; background: #F1F5F9; border-radius: 4px;">
+          <strong style="font-size: 13px; color: #0F172A;">${block.name} (${block.namePa})</strong><br/>
+          <span style="color: #64748B;">Ludhiana Agricultural Block</span>
+          <div style="margin-top: 4px; padding: 4px 6px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 4px;">
             Extraction: <strong style="color: ${catColor};">${block.stagePercent}%</strong> (${block.category})<br/>
             Water Depth: <strong>${block.depthM} m</strong> (~${Math.round(block.depthM * 3.28)} ft)<br/>
             Annual Decline: <strong style="color: #B91C1C;">-${block.annualDropCm} cm/yr</strong>
           </div>
           <span style="font-size: 11px; color: #059669; font-weight: 600; display: block; margin-top: 4px;">
-            👉 Click to select this block for advisory
+            👉 Click to calculate plot savings for this block
           </span>
         </div>
       `;
 
-      polygon.bindTooltip(tooltipContent, { sticky: true, opacity: 0.95 });
-      marker.bindTooltip(tooltipContent, { sticky: true, opacity: 0.95 });
+      circleMarker.bindTooltip(blockTooltip, { sticky: true });
+      labelMarker.bindTooltip(blockTooltip, { sticky: true });
 
-      const handleSelect = () => {
+      const handleBlockSelect = () => {
         let matched: PunjabBlock | undefined;
         for (const dist of PUNJAB_DISTRICTS) {
           const found = dist.blocks.find(b => b.id === block.id || b.name.toLowerCase() === block.name.toLowerCase());
@@ -436,36 +484,24 @@ export const PunjabGisMap: React.FC<PunjabGisMapProps> = ({
 
         if (matched) {
           onSelectBlock(matched);
-        } else {
-          onSelectBlock({
-            id: block.id,
-            name: block.name,
-            namePa: block.namePa,
-            nameHi: block.name,
-            waterTableDepthM: block.depthM,
-            annualFallCm: block.annualDropCm,
-            stageOfExtractionPercent: block.stagePercent,
-            cgwbCategory: block.category,
-            soilTypeDefault: "Sandy Loam",
-            notifiedTransplantDate: "2026-06-20",
-            transplantGroup: 2,
-            canalIrrigationSharePercent: 8,
-            tubewellCountPerSqKm: block.tubewellsPerSqKm,
-            majorAquifer: "Upper Alluvial Belt",
-            localObservations: `CGWB 2024 survey indicates stage of extraction at ${block.stagePercent}%.`
-          });
         }
 
-        map.flyTo(block.center, 10.5, { duration: 0.8 });
+        map.flyTo(block.coords, 10.5, { duration: 0.8 });
+
+        setActiveFeature({
+          title: block.name,
+          titlePa: block.namePa,
+          subDistrictOrDistrict: "Ludhiana Agricultural Block",
+          category: block.category,
+          stagePercent: block.stagePercent,
+          depthM: block.depthM,
+          annualFallCm: block.annualDropCm,
+          rechargeNote: "Central Ludhiana High-Intensity Tube-Well Pumping Zone"
+        });
       };
 
-      polygon.on("click", handleSelect);
-      marker.on("click", handleSelect);
-
-      polygon.on("mouseover", () => setHoveredBlock(block));
-      polygon.on("mouseout", () => setHoveredBlock(null));
-      marker.on("mouseover", () => setHoveredBlock(block));
-      marker.on("mouseout", () => setHoveredBlock(null));
+      circleMarker.on("click", handleBlockSelect);
+      labelMarker.on("click", handleBlockSelect);
     });
 
     return () => {
@@ -474,26 +510,33 @@ export const PunjabGisMap: React.FC<PunjabGisMapProps> = ({
     };
   }, []);
 
+  // Update selection highlight when selectedBlock changes
   useEffect(() => {
-    if (!mapInstanceRef.current) return;
+    if (!geoJsonLayerRef.current) return;
+    geoJsonLayerRef.current.setStyle((feature) => {
+      const distName = feature?.properties?.district || "";
+      const hydro = DISTRICT_HYDROLOGY[distName] || {
+        category: "Over-Exploited",
+        stagePercent: 180,
+      };
 
-    GIS_BLOCKS.forEach(block => {
-      const polygon = polygonsMapRef.current.get(block.id);
-      if (!polygon) return;
+      const isLudhiana = distName === "Ludhiana";
+      const isSelected = selectedBlock.name.toLowerCase().includes(distName.toLowerCase()) ||
+                         (distName === "Ludhiana" && selectedBlock.cgwbCategory !== undefined);
 
-      const isSelected = block.id === selectedBlock.id || 
-                         block.name.toLowerCase().includes(selectedBlock.name.toLowerCase());
-      const catColor = getCategoryColor(block.category);
+      const color = getCategoryColor(hydro.category);
 
-      polygon.setStyle({
-        color: isSelected ? "#E7B422" : catColor,
-        weight: isSelected ? 3.5 : 1.5,
-        fillOpacity: isSelected ? 0.45 : 0.28,
+      return {
+        color: isSelected ? "#E7B422" : color,
+        weight: isSelected ? 3.5 : (isLudhiana ? 2.5 : 1.2),
+        fillColor: color,
+        fillOpacity: isSelected ? 0.42 : (isLudhiana ? 0.30 : 0.22),
         dashArray: isSelected ? "4, 4" : undefined,
-      });
+      };
     });
   }, [selectedBlock]);
 
+  // Handle Tile Switching
   const handleTileSwitch = (layerKey: "light" | "satellite" | "osm") => {
     if (!mapInstanceRef.current) return;
     setActiveTileLayer(layerKey);
@@ -513,15 +556,14 @@ export const PunjabGisMap: React.FC<PunjabGisMapProps> = ({
     }
 
     L.tileLayer(newUrl, { maxZoom: 18 }).addTo(mapInstanceRef.current);
-    layersGroupRef.current?.bringToFront();
+    geoJsonLayerRef.current?.bringToFront();
+    blockMarkersLayerRef.current?.bringToFront();
   };
 
   const handleRecenter = () => {
     if (!mapInstanceRef.current) return;
-    mapInstanceRef.current.flyTo([30.82, 75.75], 9, { duration: 0.8 });
+    mapInstanceRef.current.flyTo([30.90, 75.75], 8.5, { duration: 0.8 });
   };
-
-  const activeDisplayBlock = hoveredBlock || currentGisBlock;
 
   return (
     <div className="gis-map-flat-section">
@@ -541,13 +583,13 @@ export const PunjabGisMap: React.FC<PunjabGisMapProps> = ({
               color: "var(--muted)",
               border: "1px solid var(--line)"
             }}>
-              CGWB 2024–26 Live Spatial
+              Official Administrative Boundaries
             </span>
           </div>
           <p className="section-subtitle">
             {currentLang === "pa"
-              ? "ਅਸਲ ਸਤਲੁਜ ਦਰਿਆ, ਨਹਿਰੀ ਨੈੱਟਵਰਕ ਅਤੇ ਬਲਾਕਾਂ ਤੇ ਕਲਿੱਕ ਕਰਕੇ ਖੇਤ ਦਾ ਪਾਣੀ ਸੰਕਟ ਦੇਖੋ"
-              : "Interactive spatial GIS: click any catchment block or explore the Sutlej riverbed to evaluate groundwater extraction"}
+              ? "ਅਸਲ ਪ੍ਰਸ਼ਾਸਕੀ ਜ਼ਿਲ੍ਹਾ ਹੱਦਾਂ, ਸਤਲੁਜ ਦਰਿਆ ਅਤੇ ਬਲਾਕਾਂ ਤੇ ਕਲਿੱਕ ਕਰਕੇ ਪਾਣੀ ਸੰਕਟ ਦੇਖੋ"
+              : "Real administrative district polygons with CGWB groundwater over-extraction choropleth shading"}
           </p>
         </div>
 
@@ -607,7 +649,7 @@ export const PunjabGisMap: React.FC<PunjabGisMapProps> = ({
             type="button" 
             className="gis-recenter-btn"
             onClick={handleRecenter}
-            title="Recenter to Central Punjab Alluvial Belt"
+            title="Recenter to Punjab Central Alluvial Belt"
           >
             <RotateCcw size={14} />
             <span>{currentLang === "pa" ? "ਕੇਂਦਰੀ ਪੰਜਾਬ ਦੇਖੋ" : "Recenter Punjab"}</span>
@@ -615,62 +657,55 @@ export const PunjabGisMap: React.FC<PunjabGisMapProps> = ({
         </div>
       </div>
 
+      {/* Map Canvas */}
       <div className="gis-leaflet-canvas-wrap">
         <div ref={mapContainerRef} className="gis-leaflet-map-element" />
 
         <div className="gis-river-badge">
           <Waves size={13} className="text-water" />
-          <span>Sutlej River & Sirhind Canal Water Network</span>
+          <span>Sutlej River Basin • Northern Groundwater Recharge Axis</span>
         </div>
       </div>
 
+      {/* Real Spatial Telemetry Bar */}
       <div className="gis-block-telemetry-bar">
         <div className="telemetry-info-col">
           <div className="telemetry-title-row">
             <MapPin size={16} className="text-field" />
             <h4 className="telemetry-block-name">
-              {currentLang === "pa" ? activeDisplayBlock.namePa : activeDisplayBlock.name}
+              {currentLang === "pa" ? activeFeature.titlePa : activeFeature.title}
             </h4>
             <span className="telemetry-district-badge">
-              {activeDisplayBlock.district} District
+              {activeFeature.subDistrictOrDistrict}
             </span>
-            <span className={`telemetry-status-pill ${activeDisplayBlock.category.toLowerCase().replace(/[^a-z]/g, "-")}`}>
-              {activeDisplayBlock.category}
+            <span className={`telemetry-status-pill ${activeFeature.category.toLowerCase().replace(/[^a-z]/g, "-")}`}>
+              {activeFeature.category}
             </span>
           </div>
           <span className="telemetry-helper-hint">
-            {hoveredBlock 
-              ? (currentLang === "pa" ? "👉 ਕਲਿੱਕ ਕਰਕੇ ਇਹ ਬਲਾਕ ਚੁਣੋ" : "👉 Click map zone to select for your advisory calculations")
-              : (currentLang === "pa" ? "✅ ਇਸ ਬਲਾਕ ਲਈ ਫਸਲ ਅਤੇ ਟਿਊਬਵੈੱਲ ਸਲਾਹ ਚਾਲੂ ਹੈ" : "✅ Active block selected for current farm calculations")}
+            {activeFeature.rechargeNote || "CGWB official assessment: click any Punjab district or block to calculate your farm savings"}
           </span>
         </div>
 
         <div className="telemetry-stats-strip tabular-nums">
           <div className="telemetry-stat-cell">
             <span className="stat-label">Extraction Stage</span>
-            <span className={`stat-value font-bold ${activeDisplayBlock.stagePercent > 100 ? "text-alert" : "text-field"}`}>
-              {activeDisplayBlock.stagePercent}%
+            <span className={`stat-value font-bold ${activeFeature.stagePercent > 100 ? "text-alert" : "text-field"}`}>
+              {activeFeature.stagePercent}%
             </span>
           </div>
 
           <div className="telemetry-stat-cell">
             <span className="stat-label">Water Table Depth</span>
             <span className="stat-value font-bold text-ink">
-              {activeDisplayBlock.depthM}m <span className="stat-sub">({Math.round(activeDisplayBlock.depthM * 3.28)} ft)</span>
+              {activeFeature.depthM}m <span className="stat-sub">({Math.round(activeFeature.depthM * 3.28)} ft)</span>
             </span>
           </div>
 
           <div className="telemetry-stat-cell">
             <span className="stat-label">Annual Drop Rate</span>
             <span className="stat-value font-bold text-alert">
-              -{activeDisplayBlock.annualDropCm} cm/yr
-            </span>
-          </div>
-
-          <div className="telemetry-stat-cell">
-            <span className="stat-label">Tubewell Density</span>
-            <span className="stat-value font-bold text-ink">
-              {activeDisplayBlock.tubewellsPerSqKm}/km²
+              -{activeFeature.annualFallCm} cm/yr
             </span>
           </div>
         </div>
