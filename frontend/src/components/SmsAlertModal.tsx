@@ -45,7 +45,7 @@ export const SmsAlertModal: React.FC<SmsAlertModalProps> = ({
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-container" onClick={e => e.stopPropagation()} style={{ maxWidth: '480px', backgroundColor: 'var(--paper)', border: '2px solid var(--line)', color: 'var(--ink)' }}>
+      <div className="modal-container sms-modal" onClick={e => e.stopPropagation()} style={{ maxWidth: '480px', backgroundColor: 'var(--paper)', border: '2px solid var(--line)', color: 'var(--ink)' }}>
         <div className="modal-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{
