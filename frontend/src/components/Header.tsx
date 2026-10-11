@@ -158,9 +158,9 @@ export const Header: React.FC<HeaderProps> = ({
               </>
             ) : (
               <>
-                Don't say "save water." Tell a farmer:{' '}
+                Don't just say "save water." Tell a farmer:{' '}
                 <mark className="mustard-marker">
-                  "On your plot, delaying transplanting to the notified date and using alternate wetting-and-drying saves tube-well hours and money this season."
+                  how many tube-well hours and ₹ costs they will save on their land.
                 </mark>
               </>
             )}
