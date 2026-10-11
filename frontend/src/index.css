@@ -3583,3 +3583,308 @@ h1, h2, h3, h4, h5, h6 {
 .modal-actions-row .btn-whatsapp:hover {
   background: #20BD5A;
 }
+
+/* ==========================================================================
+   Genuine Interactive Leaflet GIS Map Styling
+   ========================================================================== */
+.gis-map-flat-section {
+  background: var(--paper);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.gis-legend-strip {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 11px;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.gis-legend-strip .legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gis-legend-strip .legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.gis-map-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 14px 0 10px 0;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.gis-layer-toggles {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.gis-tool-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--bg);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.gis-tool-btn:hover {
+  border-color: var(--field);
+}
+
+.gis-tool-btn.active {
+  background: var(--field);
+  color: #FFFFFF;
+  border-color: var(--field);
+}
+
+.gis-recenter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--paper);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.gis-recenter-btn:hover {
+  background: var(--bg);
+  border-color: var(--ink);
+}
+
+.gis-leaflet-canvas-wrap {
+  position: relative;
+  width: 100%;
+  height: 520px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 2px solid var(--line);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.gis-leaflet-map-element {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.gis-river-badge {
+  position: absolute;
+  bottom: 14px;
+  left: 14px;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(6px);
+  border: 1.5px solid var(--line);
+  border-radius: 20px;
+  padding: 5px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  pointer-events: none;
+}
+
+/* Custom HTML Pin bubble markers in Leaflet */
+.custom-gis-block-pin {
+  background: transparent !important;
+  border: none !important;
+}
+
+.gis-pin-bubble {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(4px);
+  border: 2px solid;
+  border-radius: 6px;
+  padding: 2px 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+  text-align: center;
+  white-space: nowrap;
+  pointer-events: auto;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.gis-pin-bubble:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.28);
+}
+
+.gis-pin-bubble.selected {
+  border-color: #E7B422 !important;
+  border-width: 3px !important;
+  box-shadow: 0 0 0 3px rgba(231, 180, 34, 0.5), 0 4px 14px rgba(0, 0, 0, 0.3) !important;
+  transform: scale(1.08);
+}
+
+.gis-pin-bubble .pin-name {
+  font-size: 11px;
+  font-weight: 800;
+  color: #0F172A;
+  line-height: 1.15;
+}
+
+.gis-pin-bubble .pin-stat {
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.1;
+  padding: 1px 4px;
+  border-radius: 3px;
+  margin-top: 1px;
+}
+
+.gis-pin-bubble .pin-stat.over-exploited {
+  color: #DC2626;
+}
+
+.gis-pin-bubble .pin-stat.critical {
+  color: #EA580C;
+}
+
+.gis-pin-bubble .pin-stat.safe {
+  color: #16A34A;
+}
+
+/* Telemetry Footer Bar */
+.gis-block-telemetry-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.telemetry-info-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.telemetry-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.telemetry-block-name {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--ink);
+  margin: 0;
+}
+
+.telemetry-district-badge {
+  font-size: 11px;
+  color: var(--muted);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-weight: 600;
+}
+
+.telemetry-status-pill {
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 4px;
+  padding: 2px 8px;
+}
+
+.telemetry-status-pill.over-exploited {
+  background: #FEE2E2;
+  color: #991B1B;
+}
+
+.telemetry-status-pill.critical {
+  background: #FFEDD5;
+  color: #9A3412;
+}
+
+.telemetry-status-pill.safe {
+  background: #DCFCE7;
+  color: #166534;
+}
+
+.telemetry-helper-hint {
+  font-size: 12px;
+  color: var(--field);
+  font-weight: 600;
+}
+
+.telemetry-stats-strip {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.telemetry-stat-cell {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 95px;
+}
+
+.telemetry-stat-cell .stat-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.telemetry-stat-cell .stat-value {
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.telemetry-stat-cell .stat-sub {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: normal;
+}
