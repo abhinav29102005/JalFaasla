@@ -1,6 +1,6 @@
 import React from 'react';
-import { Droplet, Languages, Share2, Server, AlertTriangle, Bell } from 'lucide-react';
-import { Language, TRANSLATIONS } from '../data/translations';
+import { Share2, Bell, ShieldAlert, Cloud } from 'lucide-react';
+import { Language } from '../data/translations';
 
 interface HeaderProps {
   currentLang: Language;
@@ -21,150 +21,150 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenSmsModal,
   isLegalViolation,
 }) => {
-  const t = TRANSLATIONS[currentLang];
-
-
   return (
     <header className="site-header">
-      {/* Top Statutory Advisory Bar */}
-      <div className={`top-rule-bar ${isLegalViolation ? 'top-rule-alert' : ''}`}>
+      {/* Top Slim Solid Brick Strip: Subsoil Water Act Warning */}
+      <div className="top-brick-strip" role="banner" aria-label="Punjab Subsoil Water Act notice">
         <div className="app-container">
-          <div className="top-rule-content">
-            <div className="rule-text-left">
-              <AlertTriangle size={15} className="flex-shrink-0" />
+          <div className="brick-strip-content">
+            <div className="brick-strip-message">
+              <ShieldAlert size={16} className="brick-strip-icon" aria-hidden="true" />
               <span>
                 {isLegalViolation
                   ? (currentLang === 'pa'
-                      ? 'ਚੇਤਾਵਨੀ: 20 ਜੂਨ ਤੋਂ ਪਹਿਲਾਂ ਝੋਨਾ ਲਾਉਣਾ ਗੈਰ-ਕਾਨੂੰਨੀ ਹੈ। ₹10,000 ਪ੍ਰਤੀ ਹੈਕਟੇਅਰ ਜੁਰਮਾਨਾ ਲੱਗ ਸਕਦਾ ਹੈ!'
+                      ? 'ਚੇਤਾਵਨੀ: 20 ਜੂਨ ਤੋਂ ਪਹਿਲਾਂ ਝੋਨਾ ਲਾਉਣਾ ਗੈਰ-ਕਾਨੂੰਨੀ ਹੈ। ₹10,000 ਪ੍ਰਤੀ ਹੈਕਟੇਅਰ ਜੁਰਮਾਨੇ ਦਾ ਜੋਖਮ ਹੈ।'
                       : currentLang === 'hi'
-                      ? 'चेतावनी: 20 जून से पहले धान रोपाई अवैध है। ₹10,000 प्रति हेक्टेयर जुर्माना लग सकता है!'
-                      : 'PUNJAB SUBSOIL WATER ACT: Transplanting before 20 June is illegal. Risks ₹10,000/ha/month penalty!')
+                      ? 'चेतावनी: 20 जून से पहले धान रोपाई अवैध है। ₹10,000 प्रति हेक्टेयर जुर्माने का जोखिम है।'
+                      : 'Punjab Subsoil Water Act warning: Transplanting before 20 June risks a ₹10,000/ha/month penalty.')
                   : (currentLang === 'pa'
-                      ? 'ਪੰਜਾਬ ਸਰਕਾਰ ਨਿਯਮ: ਨੋਟੀਫਾਈਡ ਮਿਤੀ ਤੋਂ ਪਹਿਲਾਂ ਝੋਨਾ ਨਾ ਲਾਓ। ਪਾਣੀ ਅਤੇ ਬਿਜਲੀ ਬਚਾਓ।'
-                      : 'Punjab Preservation of Subsoil Water Act: Enforcing notified sowing and transplanting dates.')}
+                      ? 'ਪੰਜਾਬ ਜ਼ਮੀਨਦੋਜ਼ ਪਾਣੀ ਕਾਨੂੰਨ: ਨੋਟੀਫਾਈਡ ਮਿਤੀ ਤੋਂ ਪਹਿਲਾਂ ਝੋਨਾ ਨਾ ਲਾਓ।'
+                      : currentLang === 'hi'
+                      ? 'पंजाब भूजल कानून: अधिसूचित तिथि से पहले धान न लगाएं।'
+                      : 'Punjab Preservation of Subsoil Water Act: Sowing and transplanting dates strictly enforced.')}
               </span>
             </div>
-            <button 
+            <button
               type="button"
               onClick={onOpenLegalModal}
-              className="top-rule-btn"
+              className="brick-strip-button"
             >
-              {currentLang === 'pa' ? 'ਕਾਨੂੰਨੀ ਨਿਯਮ' : currentLang === 'hi' ? 'नियम पढ़ें' : 'Act Rules'}
+              {currentLang === 'pa' ? 'ਨਿਯਮ ਪੜ੍ਹੋ' : currentLang === 'hi' ? 'नियम पढ़ें' : 'Read the rules'}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Main Symmetrical Navbar */}
-      <div className="navbar-wrapper">
+      {/* Main Header */}
+      <div className="main-header-surface">
         <div className="app-container">
-          <div className="navbar-container">
-            <div className="navbar-brand">
-              <div className="navbar-logo-box">
-                <Droplet size={26} className="navbar-logo-icon" />
+          <div className="header-main-row">
+            {/* Title & One-Line Subtitle */}
+            <div className="header-brand">
+              <div className="header-title-line">
+                <h1 className="header-app-name">JalFaasla</h1>
+                <span className="header-punjabi-name">ਜਲ ਫ਼ਾਸਲਾ</span>
               </div>
-              <div className="navbar-title-block">
-                <div className="navbar-title-row">
-                  <h1 className="navbar-title">JalFaasla</h1>
-                  <span className="navbar-subtitle-pa">ਜਲ ਫ਼ਾਸਲਾ</span>
-                  <span className="navbar-gov-tag">PAU Ludhiana & CGWB Sentinel Data</span>
-                </div>
-                <p className="navbar-tagline">
-                  {currentLang === 'pa' 
-                    ? 'ਪੰਜਾਬ ਦੇ ਕਿਸਾਨਾਂ ਲਈ ਜ਼ਮੀਨਦੋਜ਼ ਪਾਣੀ, ਟਿਊਬਵੈੱਲ ਘੰਟੇ ਅਤੇ ਬੱਚਤ ਸਲਾਹਕਾਰ' 
-                    : currentLang === 'hi'
-                    ? 'पंजाब के किसानों हेतु भूजल, ट्यूबवेल घंटे एवं लागत बचत सलाहकार'
-                    : 'Groundwater-Aware Crop & Irrigation Advisor for Punjab Farmers'}
-                </p>
-              </div>
+              <p className="header-subtitle">
+                {currentLang === 'pa'
+                  ? 'ਪੰਜਾਬ ਦੇ ਕਿਸਾਨਾਂ ਲਈ ਜ਼ਮੀਨਦੋਜ਼ ਪਾਣੀ, ਟਿਊਬਵੈੱਲ ਘੰਟੇ ਅਤੇ ਖਰਚਾ ਬਚਾਉਣ ਵਾਲਾ ਸਲਾਹਕਾਰ'
+                  : currentLang === 'hi'
+                  ? 'पंजाब के किसानों हेतु भूजल, ट्यूबवेल घंटे एवं लागत बचत सलाहकार'
+                  : 'Groundwater-aware crop & irrigation advisor for Punjab farmers'}
+              </p>
             </div>
 
-            <div className="navbar-actions">
-              {/* Language Switcher */}
-              <div className="lang-group">
-                <span className="lang-label" title="Select Language">
-                  <Languages size={14} />
-                </span>
+            {/* Actions: Pill Language Toggle, SMS, WhatsApp */}
+            <div className="header-actions">
+              {/* Pill Language Toggle (Selected = Solid Ink) */}
+              <div className="pill-language-toggle" role="group" aria-label="Select language">
                 <button
                   type="button"
-                  className={`lang-option ${currentLang === 'en' ? 'active' : ''}`}
+                  className={`lang-pill-btn ${currentLang === 'en' ? 'selected' : ''}`}
                   onClick={() => onLanguageChange('en')}
                 >
                   English
                 </button>
                 <button
                   type="button"
-                  className={`lang-option ${currentLang === 'pa' ? 'active' : ''}`}
+                  className={`lang-pill-btn ${currentLang === 'pa' ? 'selected' : ''}`}
                   onClick={() => onLanguageChange('pa')}
                 >
                   ਪੰਜਾਬੀ
                 </button>
                 <button
                   type="button"
-                  className={`lang-option ${currentLang === 'hi' ? 'active' : ''}`}
+                  className={`lang-pill-btn ${currentLang === 'hi' ? 'selected' : ''}`}
                   onClick={() => onLanguageChange('hi')}
                 >
                   हिंदी
                 </button>
               </div>
 
-              {/* Action Buttons */}
+              {/* SMS Alerts Button (Outline) */}
               {onOpenSmsModal && (
                 <button
                   type="button"
-                  className="nav-btn"
+                  className="btn-sms-outline"
                   onClick={onOpenSmsModal}
-                  style={{
-                    background: 'rgba(6, 182, 212, 0.15)',
-                    color: '#38bdf8',
-                    border: '1px solid rgba(6, 182, 212, 0.3)',
-                    cursor: 'pointer'
-                  }}
-                  title="Enable Daily 6:00 AM Rain Alert SMS"
+                  title="Enable daily morning rain alert SMS"
                 >
-                  <Bell size={14} />
-                  <span>{currentLang === 'pa' ? 'SMS ਅਲਰਟ' : 'SMS Alerts'}</span>
+                  <Bell size={15} aria-hidden="true" />
+                  <span>{currentLang === 'pa' ? 'SMS ਅਲਰਟ' : currentLang === 'hi' ? 'SMS अलर्ट' : 'SMS alert'}</span>
                 </button>
               )}
 
+              {/* WhatsApp Share Button (Solid Green) */}
               <button
                 type="button"
-                className="nav-btn nav-btn-share"
+                className="btn-whatsapp-solid"
                 onClick={onOpenShareModal}
               >
-                <Share2 size={15} />
+                <Share2 size={15} aria-hidden="true" />
                 <span>{currentLang === 'pa' ? 'ਵਟਸਐਪ' : 'WhatsApp'}</span>
               </button>
 
+              {/* Architecture Info (Subtle Outline) */}
               <button
                 type="button"
-                className="nav-btn nav-btn-aws"
+                className="btn-info-outline"
                 onClick={onOpenAwsModal}
+                title="System architecture"
               >
-                <Server size={15} />
-                <span>AWS Cloud</span>
+                <Cloud size={15} aria-hidden="true" />
+                <span>Cloud</span>
               </button>
             </div>
-
           </div>
         </div>
       </div>
 
-      {/* Symmetrical Insight Strip */}
-      <div className="insight-blue-strip">
+      {/* Core Principle: One large bold sentence, max 62ch, no box, mustard marker */}
+      <div className="core-principle-wrapper">
         <div className="app-container">
-          <div className="insight-strip-inner">
-            <span className="insight-strip-lead">
-              {currentLang === 'pa' ? 'ਮੁੱਖ ਸੱਚਾਈ' : 'CORE PRINCIPLE'}
-            </span>
-            <span className="insight-strip-text">
-              {currentLang === 'pa'
-                ? 'ਸਿਰਫ਼ "ਪਾਣੀ ਬਚਾਓ" ਨਾ ਕਹੋ। ਕਿਸਾਨ ਨੂੰ ਦੱਸੋ: ਤੁਹਾਡੇ ਖੇਤ ਵਿੱਚ ਕਿੰਨੇ ਘੰਟੇ ਟਿਊਬਵੈੱਲ ਬੰਦ ਰਹੇਗਾ ਅਤੇ ਕਿੰਨੇ ਰੁਪਏ ਬਚਣਗੇ।'
-                : currentLang === 'hi'
-                ? 'सिर्फ "पानी बचाओ" मत कहिए। किसान को बताइए: आपके खेत पर कितने घंटे ट्यूबवेल बंद रहेगा और कितने ₹ बचेंगे।'
-                : 'Don’t say "save water." Tell a farmer: "On your plot, delaying transplanting to the notified date and using alternate wetting-and-drying saves X tube-well hours and ₹Y this season."'}
-            </span>
-          </div>
+          <p className="core-principle-sentence">
+            {currentLang === 'pa' ? (
+              <>
+                ਸਿਰਫ਼ "ਪਾਣੀ ਬਚਾਓ" ਨਾ ਕਹੋ। ਕਿਸਾਨ ਨੂੰ ਦੱਸੋ:{' '}
+                <mark className="mustard-marker">
+                  ਤੁਹਾਡੇ ਖੇਤ ਵਿੱਚ ਕਿੰਨੇ ਘੰਟੇ ਟਿਊਬਵੈੱਲ ਬੰਦ ਰਹੇਗਾ ਅਤੇ ਕਿੰਨੇ ਰੁਪਏ ਬਚਣਗੇ।
+                </mark>
+              </>
+            ) : currentLang === 'hi' ? (
+              <>
+                सिर्फ "पानी बचाओ" मत कहिए। किसान को बताइए:{' '}
+                <mark className="mustard-marker">
+                  आपके खेत पर कितने घंटे ट्यूबवेल बंद रहेगा और कितने ₹ बचेंगे।
+                </mark>
+              </>
+            ) : (
+              <>
+                Don't say "save water." Tell a farmer:{' '}
+                <mark className="mustard-marker">
+                  "On your plot, delaying transplanting to the notified date and using alternate wetting-and-drying saves tube-well hours and money this season."
+                </mark>
+              </>
+            )}
+          </p>
         </div>
       </div>
     </header>

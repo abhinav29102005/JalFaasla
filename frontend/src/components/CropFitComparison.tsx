@@ -1,14 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  CheckCircle2, 
-  Clock, 
-  IndianRupee, 
-  Droplet, 
-  TrendingUp, 
-  Flame,
-  Volume2,
-  Square
-} from 'lucide-react';
+import React, { useState } from 'react';
+import { IndianRupee, Droplet, Clock, TrendingUp, Volume2, Square } from 'lucide-react';
 import { FarmerAdvisoryResult } from '../utils/advisoryEngine';
 import { Language } from '../data/translations';
 import { playPunjabiAdvisory, stopVoiceAdvisory } from '../utils/voiceAdvisory';
@@ -23,28 +14,21 @@ export const CropFitComparison: React.FC<CropFitComparisonProps> = ({
   advisory,
 }) => {
   const [selectedPlan, setSelectedPlan] = useState<'pr126' | 'diversified'>('pr126');
-  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
-
-  useEffect(() => {
-    return () => {
-      stopVoiceAdvisory();
-    };
-  }, []);
+  const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
 
   const handleToggleAudio = () => {
     if (isPlayingAudio) {
       stopVoiceAdvisory();
       setIsPlayingAudio(false);
     } else {
-      const speechText = currentLang === 'pa' 
+      setIsPlayingAudio(true);
+      const textToSpeak = currentLang === 'pa' 
         ? advisory.headlinePunchlinePa 
         : currentLang === 'hi' 
         ? advisory.headlinePunchlineHi 
         : advisory.headlinePunchline;
-
-      setIsPlayingAudio(true);
       playPunjabiAdvisory(
-        speechText,
+        textToSpeak,
         currentLang,
         () => setIsPlayingAudio(true),
         () => setIsPlayingAudio(false),
@@ -57,256 +41,250 @@ export const CropFitComparison: React.FC<CropFitComparisonProps> = ({
   const activePlan = selectedPlan === 'pr126' ? recommendedShortPaddyAwd : recommendedDiversified;
 
   return (
-    <div className="card cropfit-card">
-      {/* Real-world Pitch Banner in Blue Gradient */}
-      <div className="punchline-blue-card">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
-          <div className="punchline-lead-tag">
-            {currentLang === 'pa' ? 'ਤੁਹਾਡੇ ਖੇਤ ਦਾ ਸਿੱਧਾ ਹਿਸਾਬ-ਕਿਤਾਬ' : 'REAL ECONOMIC IMPACT ON YOUR FARM'}
-          </div>
+    <div className="cropfit-comparison-section">
+      {/* Punchline Header Bar - Flat surface, no gradient */}
+      <div className="punchline-flat-card">
+        <div className="punchline-top-row">
+          <span className="punchline-subtitle-label">
+            {currentLang === 'pa' ? 'ਤੁਹਾਡੇ ਖੇਤ ਦਾ ਸਿੱਧਾ ਹਿਸਾਬ-ਕਿਤਾਬ' : 'Real economic impact on your farm'}
+          </span>
           <button
             type="button"
             onClick={handleToggleAudio}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '6px 14px',
-              borderRadius: '20px',
-              border: '1px solid rgba(56, 189, 248, 0.4)',
-              background: isPlayingAudio ? 'rgba(239, 68, 68, 0.2)' : 'rgba(56, 189, 248, 0.15)',
-              color: isPlayingAudio ? '#fca5a5' : '#38bdf8',
-              cursor: 'pointer',
-              fontWeight: 600,
-              fontSize: '12px',
-              transition: 'all 0.2s ease',
-            }}
-            title="Listen to Punjabi Voice Advisory"
+            className={`voice-listen-btn ${isPlayingAudio ? 'playing' : ''}`}
+            title="Listen to Punjabi voice advisory"
           >
             {isPlayingAudio ? (
               <>
-                <Square size={13} fill="currentColor" />
-                <span>{currentLang === 'pa' ? 'ਆਵਾਜ਼ ਬੰਦ ਕਰੋ (Stop)' : 'Stop Audio'}</span>
+                <Square size={13} fill="currentColor" aria-hidden="true" />
+                <span>{currentLang === 'pa' ? 'ਆਵਾਜ਼ ਬੰਦ ਕਰੋ' : 'Stop audio'}</span>
               </>
             ) : (
               <>
-                <Volume2 size={15} />
-                <span>{currentLang === 'pa' ? '🔊 ਆਵਾਜ਼ ਵਿੱਚ ਸੁਣੋ (Play Audio)' : '🔊 Listen Voice Advisory'}</span>
+                <Volume2 size={15} aria-hidden="true" />
+                <span>{currentLang === 'pa' ? 'ਆਵਾਜ਼ ਵਿੱਚ ਸੁਣੋ' : 'Listen voice advisory'}</span>
               </>
             )}
           </button>
         </div>
 
-        <h3 className="punchline-main-heading">
+        <h3 className="punchline-quote">
           "{currentLang === 'pa' 
             ? advisory.headlinePunchlinePa 
             : currentLang === 'hi' 
             ? advisory.headlinePunchlineHi 
             : advisory.headlinePunchline}"
         </h3>
-        <p className="punchline-source-note">
+        <p className="punchline-attribution">
           {currentLang === 'pa'
-            ? 'ਪੰਜਾਬ ਖੇਤੀਬਾੜੀ ਯੂਨੀਵਰਸਿਟੀ (PAU) ਲੁਧਿਆਣਾ ਰਿਸਰਚ ਅਤੇ ਜ਼ਮੀਨਦੋਜ਼ ਪਾਣੀ ਬੋਰ ਅੰਕੜਿਆਂ ਤੇ ਆਧਾਰਿਤ।'
-            : 'Based on Punjab Agricultural University (PAU) Ludhiana trials and Central Ground Water Board monitoring.'}
+            ? 'ਪੰਜਾਬ ਖੇਤੀਬਾੜੀ ਯੂਨੀਵਰਸਿਟੀ (PAU) ਖੋਜ ਅਤੇ ਕੇਂਦਰੀ ਗਰਾਊਂਡ ਵਾਟਰ ਬੋਰਡ (CGWB) ਅੰਕੜਿਆਂ ਤੇ ਆਧਾਰਿਤ।'
+            : 'Based on Punjab Agricultural University (PAU) trials and Central Ground Water Board monitoring.'}
         </p>
       </div>
 
-
-      {/* 4 Big Numbers - Simple for Farmers */}
-      <div className="big-metrics-grid">
-        <div className="metric-box box-blue">
-          <div className="box-top">
-            <Clock size={20} className="text-cyan" />
-            <span className="box-title">
-              {currentLang === 'pa' ? 'ਟਿਊਬਵੈੱਲ ਘੰਟੇ ਬਚੇ' : 'Tube-Well Hours Saved'}
+      {/* 4 Flat Key Metrics */}
+      <div className="metrics-flat-grid">
+        <div className="metric-flat-item">
+          <div className="metric-flat-header">
+            <Clock size={16} className="metric-icon-muted" aria-hidden="true" />
+            <span className="metric-flat-label">
+              {currentLang === 'pa' ? 'ਟਿਊਬਵੈੱਲ ਘੰਟੇ ਬਚੇ' : 'Tube-well hours saved'}
             </span>
           </div>
-          <div className="box-number-row">
-            <span className="big-number font-mono text-cyan">
+          <div className="metric-number-display">
+            <span className="metric-large-number font-mono">
               {activePlan.tubewellHoursSaved}
             </span>
-            <span className="big-unit">ਘੰਟੇ (Hrs)</span>
+            <span className="metric-unit-text">{currentLang === 'pa' ? 'ਘੰਟੇ' : 'hours'}</span>
           </div>
-          <span className="box-detail">
-            {baseline.tubewellHoursTotal} ਘੰਟਿਆਂ ਤੋਂ ਘੱਟ ਕੇ {activePlan.tubewellHoursTotal} ਘੰਟੇ ਰਹਿ ਗਏ
+          <span className="metric-footnote">
+            {baseline.tubewellHoursTotal} {currentLang === 'pa' ? 'ਘੰਟਿਆਂ ਤੋਂ ਘੱਟ ਕੇ' : 'hrs reduced to'} {activePlan.tubewellHoursTotal} {currentLang === 'pa' ? 'ਘੰਟੇ' : 'hrs'}
           </span>
         </div>
 
-        <div className="metric-box box-green">
-          <div className="box-top">
-            <IndianRupee size={20} className="text-emerald" />
-            <span className="box-title">
-              {currentLang === 'pa' ? 'ਸਿੱਧਾ ਖਰਚਾ ਬਚਿਆ' : 'Diesel / Power Saved'}
+        <div className="metric-flat-item">
+          <div className="metric-flat-header">
+            <IndianRupee size={16} className="metric-icon-green" aria-hidden="true" />
+            <span className="metric-flat-label">
+              {currentLang === 'pa' ? 'ਡੀਜ਼ਲ / ਬਿਜਲੀ ਖਰਚਾ ਬਚਿਆ' : 'Diesel / power saved'}
             </span>
           </div>
-          <div className="box-number-row">
-            <span className="big-number font-mono text-emerald">
-              ₹{activePlan.costSavedInr.toLocaleString('en-IN')}
+          <div className="metric-number-display">
+            <span className="metric-large-number metric-green-number font-mono">
+              ₹{(activePlan.costSavedInr ?? 0).toLocaleString('en-IN')}
             </span>
           </div>
-          <span className="box-detail">
-            ਡੀਜ਼ਲ / ਬਿਜਲੀ ਅਤੇ ਮੋਟਰ ਮੁਰੰਮਤ ਦੇ ਬਚੇ ਪੈਸੇ
+          <span className="metric-footnote">
+            {currentLang === 'pa' ? 'ਡੀਜ਼ਲ, ਬਿਜਲੀ ਅਤੇ ਮੋਟਰ ਮੁਰੰਮਤ ਦੀ ਬੱਚਤ' : 'Direct operating cost reduction'}
           </span>
         </div>
 
-        <div className="metric-box box-water">
-          <div className="box-top">
-            <Droplet size={20} className="text-blue" />
-            <span className="box-title">
-              {currentLang === 'pa' ? 'ਧਰਤੀ ਹੇਠਲਾ ਪਾਣੀ ਬਚਿਆ' : 'Groundwater Saved'}
+        <div className="metric-flat-item">
+          <div className="metric-flat-header">
+            <Droplet size={16} className="metric-icon-teal" aria-hidden="true" />
+            <span className="metric-flat-label">
+              {currentLang === 'pa' ? 'ਜ਼ਮੀਨਦੋਜ਼ ਪਾਣੀ ਬਚਿਆ' : 'Groundwater saved'}
             </span>
           </div>
-          <div className="box-number-row">
-            <span className="big-number font-mono text-blue">
-              {activePlan.waterSavedPercent}%
+          <div className="metric-number-display">
+            <span className="metric-large-number metric-teal-number font-mono">
+              {activePlan.waterSavedPercent ?? 0}%
             </span>
-            <span className="big-unit">ਬੱਚਤ</span>
+            <span className="metric-unit-text">{currentLang === 'pa' ? 'ਬੱਚਤ' : 'saved'}</span>
           </div>
-          <span className="box-detail">
-            {activePlan.waterSavedM3Total.toLocaleString('en-IN')} m³ ਪਾਣੀ ਬਚਾਇਆ
+          <span className="metric-footnote">
+            {(activePlan.waterSavedM3Total ?? 0).toLocaleString('en-IN')} m³ {currentLang === 'pa' ? 'ਪਾਣੀ ਬਚਾਇਆ' : 'water conserved'}
           </span>
         </div>
 
-        <div className="metric-box box-profit">
-          <div className="box-top">
-            <TrendingUp size={20} className="text-amber" />
-            <span className="box-title">
-              {currentLang === 'pa' ? 'ਕੁੱਲ ਸ਼ੁੱਧ ਕਮਾਈ' : 'Est. Net Income'}
+        <div className="metric-flat-item">
+          <div className="metric-flat-header">
+            <TrendingUp size={16} className="metric-icon-muted" aria-hidden="true" />
+            <span className="metric-flat-label">
+              {currentLang === 'pa' ? 'ਕੁੱਲ ਸ਼ੁੱਧ ਕਮਾਈ' : 'Estimated net income'}
             </span>
           </div>
-          <div className="box-number-row">
-            <span className="big-number font-mono text-amber">
-              ₹{activePlan.netReturnInr.toLocaleString('en-IN')}
+          <div className="metric-number-display">
+            <span className="metric-large-number font-mono">
+              ₹{(activePlan.netReturnInr ?? 0).toLocaleString('en-IN')}
             </span>
           </div>
-          <span className="box-detail">
-            ਘੱਟ ਖਰਚੇ ਕਾਰਨ ਮੁਨਾਫ਼ਾ ਬਰਾਬਰ ਜਾਂ ਵੱਧ
+          <span className="metric-footnote">
+            {currentLang === 'pa' ? 'ਘੱਟ ਖਰਚੇ ਕਾਰਨ ਮੁਨਾਫ਼ਾ ਬਰਾਬਰ ਜਾਂ ਵੱਧ' : 'Net profitability per season'}
           </span>
         </div>
       </div>
 
-      {/* Plan Select Buttons - Clean Rectangles */}
-      <div className="plan-selection-bar">
-        <span className="plan-bar-label">
-          {currentLang === 'pa' ? 'ਫਸਲ ਯੋਜਨਾ ਚੁਣੋ:' : 'Choose Farm Plan:'}
+      {/* Plan Selection Buttons */}
+      <div className="plan-toggle-row">
+        <span className="plan-toggle-title">
+          {currentLang === 'pa' ? 'ਫਸਲ ਯੋਜਨਾ ਚੁਣੋ:' : 'Choose crop plan:'}
         </span>
-        <div className="plan-buttons">
+        <div className="plan-toggle-group">
           <button
             type="button"
-            className={`plan-btn ${selectedPlan === 'pr126' ? 'active' : ''}`}
+            className={`plan-tab-btn ${selectedPlan === 'pr126' ? 'active' : ''}`}
             onClick={() => setSelectedPlan('pr126')}
           >
-            ਯੋਜਨਾ 1: ਪੀ.ਆਰ.-126 + ਪਾਣੀ-ਪਾਈਪ (PAU ਸਿਫਾਰਸ਼)
+            {currentLang === 'pa' ? 'ਯੋਜਨਾ 1: ਪੀ.ਆਰ.-126 + ਪਾਣੀ-ਪਾਈਪ (AWD)' : 'Plan 1: PR-126 + AWD pani-pipe (PAU)'}
           </button>
           <button
             type="button"
-            className={`plan-btn ${selectedPlan === 'diversified' ? 'active' : ''}`}
+            className={`plan-tab-btn ${selectedPlan === 'diversified' ? 'active' : ''}`}
             onClick={() => setSelectedPlan('diversified')}
           >
-            ਯੋਜਨਾ 2: ਫਸਲੀ ਵਿਭਿੰਨਤਾ (ਪੀ.ਆਰ.-126 + ਮੱਕੀ)
+            {currentLang === 'pa' ? 'ਯੋਜਨਾ 2: ਫਸਲੀ ਵਿਭਿੰਨਤਾ (ਪੀ.ਆਰ.-126 + ਮੱਕੀ)' : 'Plan 2: Crop diversification (PR-126 + maize)'}
           </button>
         </div>
       </div>
 
-      {/* Side-by-Side Comparison */}
-      <div className="side-comparison-grid">
-        {/* Baseline Old Method */}
-        <div className="compare-card old-method">
-          <div className="compare-header">
-            <span className="compare-tag tag-old">ਰਵਾਇਤੀ ਤਰੀਕਾ (ਪੁਰਾਣਾ ਅਭਿਆਸ)</span>
-            <h4 className="compare-title">{baseline.cropName}</h4>
-            <span className="compare-sub">ਲਗਾਤਾਰ ਖੜ੍ਹਾ ਪਾਣੀ (ਕੱਦੂ ਕਰਕੇ 5-7cm ਭਰ ਕੇ ਰੱਖਣਾ)</span>
+      {/* 50/50 Crop Comparison: Two panels split by a single 2px divider, not two floating cards */}
+      <div className="split-comparison-container">
+        {/* Left Panel: Baseline Method */}
+        <div className="split-panel panel-baseline">
+          <div className="split-panel-header">
+            <span className="panel-category-title">
+              {currentLang === 'pa' ? 'ਰਵਾਇਤੀ ਤਰੀਕਾ (ਪੁਰਾਣਾ ਅਭਿਆਸ)' : 'Baseline conventional practice'}
+            </span>
+            <h4 className="panel-crop-heading">{baseline.cropName}</h4>
+            <p className="panel-crop-desc">
+              {currentLang === 'pa' ? 'ਲਗਾਤਾਰ ਖੜ੍ਹਾ ਪਾਣੀ (ਕੱਦੂ ਕਰਕੇ 5-7cm ਭਰਨਾ)' : 'Continuous flood irrigation (5-7cm puddle)'}
+            </p>
           </div>
 
-          <div className="compare-specs">
-            <div className="spec-row">
-              <span className="spec-label">ਟਿਊਬਵੈੱਲ ਚੱਲਣ ਦੇ ਘੰਟੇ:</span>
-              <span className="spec-value font-mono">{baseline.tubewellHoursTotal} ਘੰਟੇ (Hours)</span>
+          <div className="split-specs-list">
+            <div className="split-spec-row">
+              <span className="spec-label">{currentLang === 'pa' ? 'ਟਿਊਬਵੈੱਲ ਚੱਲਣ ਦੇ ਘੰਟੇ:' : 'Tube-well run time:'}</span>
+              <span className="spec-value font-mono">{baseline.tubewellHoursTotal} {currentLang === 'pa' ? 'ਘੰਟੇ' : 'hours'}</span>
             </div>
-            <div className="spec-row">
-              <span className="spec-label">ਡੀਜ਼ਲ / ਬਿਜਲੀ ਖਰਚਾ:</span>
-              <span className="spec-value font-mono">₹{baseline.operationalCostInr.toLocaleString('en-IN')}</span>
+            <div className="split-spec-row">
+              <span className="spec-label">{currentLang === 'pa' ? 'ਡੀਜ਼ਲ / ਬਿਜਲੀ ਖਰਚਾ:' : 'Fuel / electricity cost:'}</span>
+              <span className="spec-value font-mono">₹{(baseline.operationalCostInr ?? 0).toLocaleString('en-IN')}</span>
             </div>
-            <div className="spec-row">
-              <span className="spec-label">ਧਰਤੀ ਹੇਠੋਂ ਕੱਢਿਆ ਪਾਣੀ:</span>
-              <span className="spec-value font-mono">{baseline.waterUsedM3Total.toLocaleString('en-IN')} m³</span>
+            <div className="split-spec-row">
+              <span className="spec-label">{currentLang === 'pa' ? 'ਧਰਤੀ ਹੇਠੋਂ ਕੱਢਿਆ ਪਾਣੀ:' : 'Groundwater pumped:'}</span>
+              <span className="spec-value font-mono">{(baseline.waterUsedM3Total ?? 0).toLocaleString('en-IN')} m³</span>
             </div>
-            <div className="spec-row">
-              <span className="spec-label">ਪੱਕਣ ਦਾ ਸਮਾਂ:</span>
-              <span className="spec-value font-mono">{baseline.durationDays} ਦਿਨ (ਲੇਟ ਕਟਾਈ)</span>
+            <div className="split-spec-row">
+              <span className="spec-label">{currentLang === 'pa' ? 'ਪੱਕਣ ਦਾ ਸਮਾਂ:' : 'Crop maturity period:'}</span>
+              <span className="spec-value font-mono">{baseline.durationDays} {currentLang === 'pa' ? 'ਦਿਨ' : 'days'}</span>
             </div>
-            <div className="spec-row">
-              <span className="spec-label">ਪਰਾਲੀ ਦੀ ਸਮੱਸਿਆ:</span>
-              <span className="spec-value font-mono text-red">
-                <Flame size={14} className="inline-icon" /> ਭਾਰੀ ਪਰਾਲੀ, ਕਣਕ ਬਿਜਾਈ ਲੇਟ
+            <div className="split-spec-row">
+              <span className="spec-label">{currentLang === 'pa' ? 'ਪਰਾਲੀ ਦੀ ਸਮੱਸਿਆ:' : 'Stubble management:'}</span>
+              <span className="spec-value text-alert">
+                {currentLang === 'pa' ? 'ਭਾਰੀ ਪਰਾਲੀ, ਕਣਕ ਬਿਜਾਈ ਲੇਟ' : 'Heavy biomass, delayed wheat sowing'}
               </span>
             </div>
-            <div className="spec-row spec-total">
-              <span className="spec-label">ਕਿਸਾਨ ਦੀ ਬੱਚਤ:</span>
-              <span className="spec-value font-mono font-bold">₹{baseline.netReturnInr.toLocaleString('en-IN')}</span>
+            <div className="split-spec-row split-spec-total">
+              <span className="spec-label">{currentLang === 'pa' ? 'ਕਿਸਾਨ ਦੀ ਕਮਾਈ:' : 'Net farm return:'}</span>
+              <span className="spec-value font-mono font-bold">₹{(baseline.netReturnInr ?? 0).toLocaleString('en-IN')}</span>
             </div>
           </div>
 
-          <div className="compare-warning-box">
-            ⚠️ <strong>ਨੁਕਸਾਨ:</strong> ਪਾਣੀ ਦਾ ਪੱਧਰ ਤੇਜ਼ੀ ਨਾਲ ਹੇਠਾਂ ਜਾਂਦਾ ਹੈ, ਮੋਟਰਾਂ ਸੜਦੀਆਂ ਹਨ ਅਤੇ ਡੀਜ਼ਲ ਦਾ ਬੋਝ ਵਧਦਾ ਹੈ।
+          <div className="panel-consequence-note text-alert">
+            {currentLang === 'pa'
+              ? 'ਨੁਕਸਾਨ: ਪਾਣੀ ਦਾ ਪੱਧਰ ਤੇਜ਼ੀ ਨਾਲ ਹੇਠਾਂ ਜਾਂਦਾ ਹੈ, ਮੋਟਰਾਂ ਸੜਦੀਆਂ ਹਨ ਅਤੇ ਡੀਜ਼ਲ ਦਾ ਬੋਝ ਵਧਦਾ ਹੈ।'
+              : 'Drawback: Accelerates groundwater depletion, increases pump burnout, and raises fuel costs.'}
           </div>
         </div>
 
-        {/* Recommended New Method */}
-        <div className="compare-card new-method">
-          <div className="compare-header">
-            <span className="compare-tag tag-new">
-              <CheckCircle2 size={14} /> ਸਿਫਾਰਸ਼ ਕੀਤਾ ਤਰੀਕਾ (ਨਵਾਂ ਮੁਨਾਫ਼ਾ)
+        {/* Right Panel: Winner marked with a green left bar, not a badge */}
+        <div className="split-panel panel-recommended winner-green-bar">
+          <div className="split-panel-header">
+            <span className="panel-category-title text-field">
+              {currentLang === 'pa' ? 'ਸਿਫਾਰਸ਼ ਕੀਤਾ ਤਰੀਕਾ (ਨਵਾਂ ਮੁਨਾਫ਼ਾ)' : 'Recommended method'}
             </span>
-            <h4 className="compare-title">{activePlan.cropName}</h4>
-            <span className="compare-sub">
+            <h4 className="panel-crop-heading">{activePlan.cropName}</h4>
+            <p className="panel-crop-desc">
               {selectedPlan === 'pr126' 
-                ? 'ਪਾਣੀ-ਪਾਈਪ (AWD) ਨਾਲ ਬਦਲਵੀਂ ਸੁੱਕੀ-ਗਿੱਲੀ ਸਿੰਚਾਈ' 
-                : 'ਅੱਧੇ ਰਕਬੇ ਵਿੱਚ ਮੱਕੀ + ਅੱਧੇ ਵਿੱਚ ਪੀ.ਆਰ.-126'}
-            </span>
+                ? (currentLang === 'pa' ? 'ਪਾਣੀ-ਪਾਈਪ (AWD) ਨਾਲ ਬਦਲਵੀਂ ਸੁੱਕੀ-ਗਿੱਲੀ ਸਿੰਚਾਈ' : 'Alternate wetting and drying (AWD pani-pipe)')
+                : (currentLang === 'pa' ? 'ਅੱਧੇ ਰਕਬੇ ਵਿੱਚ ਮੱਕੀ + ਅੱਧੇ ਵਿੱਚ ਪੀ.ਆਰ.-126' : 'Half area maize + half area PR-126')}
+            </p>
           </div>
 
-          <div className="compare-specs">
-            <div className="spec-row highlight-spec">
-              <span className="spec-label">ਟਿਊਬਵੈੱਲ ਚੱਲਣ ਦੇ ਘੰਟੇ:</span>
-              <span className="spec-value font-mono font-bold text-cyan">
-                {activePlan.tubewellHoursTotal} ਘੰਟੇ ({activePlan.tubewellHoursSaved} ਘੰਟੇ ਬਚੇ!)
+          <div className="split-specs-list">
+            <div className="split-spec-row highlight-row">
+              <span className="spec-label">{currentLang === 'pa' ? 'ਟਿਊਬਵੈੱਲ ਚੱਲਣ ਦੇ ਘੰਟੇ:' : 'Tube-well run time:'}</span>
+              <span className="spec-value font-mono font-bold">
+                {activePlan.tubewellHoursTotal} {currentLang === 'pa' ? 'ਘੰਟੇ' : 'hours'} ({activePlan.tubewellHoursSaved} {currentLang === 'pa' ? 'ਘੰਟੇ ਬਚੇ' : 'hrs saved'})
               </span>
             </div>
-            <div className="spec-row highlight-spec">
-              <span className="spec-label">ਡੀਜ਼ਲ / ਬਿਜਲੀ ਖਰਚਾ:</span>
-              <span className="spec-value font-mono font-bold text-emerald">
-                ₹{activePlan.operationalCostInr.toLocaleString('en-IN')} (₹{activePlan.costSavedInr.toLocaleString('en-IN')} ਬਚੇ!)
+            <div className="split-spec-row highlight-row">
+              <span className="spec-label">{currentLang === 'pa' ? 'ਡੀਜ਼ਲ / ਬਿਜਲੀ ਖਰਚਾ:' : 'Fuel / electricity cost:'}</span>
+              <span className="spec-value font-mono font-bold text-field">
+                ₹{(activePlan.operationalCostInr ?? 0).toLocaleString('en-IN')} (₹{(activePlan.costSavedInr ?? 0).toLocaleString('en-IN')} {currentLang === 'pa' ? 'ਬਚੇ' : 'saved'})
               </span>
             </div>
-            <div className="spec-row highlight-spec">
-              <span className="spec-label">ਧਰਤੀ ਹੇਠੋਂ ਕੱਢਿਆ ਪਾਣੀ:</span>
-              <span className="spec-value font-mono font-bold text-blue">
-                {activePlan.waterUsedM3Total.toLocaleString('en-IN')} m³ ({activePlan.waterSavedPercent}% ਬੱਚਤ)
+            <div className="split-spec-row highlight-row">
+              <span className="spec-label">{currentLang === 'pa' ? 'ਧਰਤੀ ਹੇਠੋਂ ਕੱਢਿਆ ਪਾਣੀ:' : 'Groundwater pumped:'}</span>
+              <span className="spec-value font-mono font-bold text-water">
+                {(activePlan.waterUsedM3Total ?? 0).toLocaleString('en-IN')} m³ ({activePlan.waterSavedPercent ?? 0}% {currentLang === 'pa' ? 'ਬੱਚਤ' : 'saved'})
               </span>
             </div>
-            <div className="spec-row">
-              <span className="spec-label">ਪੱਕਣ ਦਾ ਸਮਾਂ:</span>
-              <span className="spec-value font-mono text-emerald">
-                {activePlan.durationDays} ਦਿਨ (ਸਤੰਬਰ ਦੇ ਅਖੀਰ ਵਿੱਚ ਕਟਾਈ)
+            <div className="split-spec-row">
+              <span className="spec-label">{currentLang === 'pa' ? 'ਪੱਕਣ ਦਾ ਸਮਾਂ:' : 'Crop maturity period:'}</span>
+              <span className="spec-value font-mono text-field">
+                {activePlan.durationDays} {currentLang === 'pa' ? 'ਦਿਨ (ਸਤੰਬਰ ਅਖੀਰ ਕਟਾਈ)' : 'days (late September harvest)'}
               </span>
             </div>
-            <div className="spec-row">
-              <span className="spec-label">ਪਰਾਲੀ ਦੀ ਸਥਿਤੀ:</span>
-              <span className="spec-value font-mono text-emerald">
-                ਘੱਟ ਪਰਾਲੀ, ਆਲੂ/ਮਟਰ ਜਾਂ ਕਣਕ ਦੀ ਸਮੇਂ ਸਿਰ ਬਿਜਾਈ
+            <div className="split-spec-row">
+              <span className="spec-label">{currentLang === 'pa' ? 'ਪਰਾਲੀ ਦੀ ਸਥਿਤੀ:' : 'Stubble management:'}</span>
+              <span className="spec-value text-field">
+                {currentLang === 'pa' ? 'ਘੱਟ ਪਰਾਲੀ, ਕਣਕ ਦੀ ਸਮੇਂ ਸਿਰ ਬਿਜਾਈ' : 'Reduced residue, on-time wheat sowing'}
               </span>
             </div>
-            <div className="spec-row spec-total highlight-spec">
-              <span className="spec-label">ਕਿਸਾਨ ਦੀ ਕੁੱਲ ਕਮਾਈ:</span>
-              <span className="spec-value font-mono font-bold text-amber">
-                ₹{activePlan.netReturnInr.toLocaleString('en-IN')} (+₹{(activePlan.netReturnInr - baseline.netReturnInr).toLocaleString('en-IN')} ਵੱਧ ਮੁਨਾਫ਼ਾ)
+            <div className="split-spec-row split-spec-total highlight-row">
+              <span className="spec-label">{currentLang === 'pa' ? 'ਕਿਸਾਨ ਦੀ ਕਮਾਈ:' : 'Net farm return:'}</span>
+              <span className="spec-value font-mono font-bold text-field">
+                ₹{(activePlan.netReturnInr ?? 0).toLocaleString('en-IN')} (+₹{((activePlan.netReturnInr ?? 0) - (baseline.netReturnInr ?? 0)).toLocaleString('en-IN')} {currentLang === 'pa' ? 'ਵੱਧ ਮੁਨਾਫ਼ਾ' : 'gain'})
               </span>
             </div>
           </div>
 
-          <div className="compare-success-box">
-            ✅ <strong>ਫ਼ਾਇਦਾ:</strong> {currentLang === 'pa' ? activePlan.keyRecommendationPa : activePlan.keyRecommendation}
+          <div className="panel-consequence-note text-field">
+            {currentLang === 'pa'
+              ? `ਸਿਫਾਰਸ਼: ${activePlan.keyRecommendationPa}`
+              : `Recommendation: ${activePlan.keyRecommendation}`}
           </div>
         </div>
       </div>

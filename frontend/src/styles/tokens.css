@@ -1,0 +1,96 @@
+/* ==========================================================================
+   JalFaasla (ਜਲ ਫ਼ਾਸਲਾ) Design Tokens
+   Strict Flat Palette • Light Default + prefers-color-scheme Dark
+   ========================================================================== */
+
+:root {
+  /* Core Light Palette */
+  --bg: #EDF1E6;
+  --paper: #F9FAF5;
+  --ink: #18301F;
+  --muted: #56685A;
+  --line: #C9D3C0;
+  --field: #2E6B3B;
+  --mustard: #E7B422;
+  --mustard-text: #2A2000;
+  --water: #1C7C8C;
+  --alert: #A8301C;
+
+  /* Semantic Mappings */
+  --surface: var(--paper);
+  --border: var(--line);
+  --text-main: var(--ink);
+  --text-muted: var(--muted);
+  --focus-ring: var(--mustard);
+
+  /* Soil Cross-Section Layers (Flat Tones) */
+  --soil-topsoil: #C8BAA3;
+  --soil-clay: #B09E83;
+  --soil-sand: #D9CEB4;
+  --soil-aquifer: #CDE6E8;
+  --soil-waterline: var(--water);
+
+  /* Typography */
+  --font-heading: 'Anek Gurmukhi', 'Noto Sans Gurmukhi', 'Noto Sans Devanagari', system-ui, -apple-system, sans-serif;
+  --font-body: 'Mukta', 'Noto Sans Gurmukhi', 'Noto Sans Devanagari', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  /* Font Scaling & Line Heights */
+  --font-size-base: 17px;
+  --line-height-base: 1.5;
+
+  /* Radii & Sizes */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-pill: 9999px;
+
+  /* Touch Targets & Input Heights */
+  --input-height: 52px;
+  --button-primary-height: 56px;
+  --min-touch-target: 44px;
+}
+
+/* Dark Mode Tokens */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #101A12;
+    --paper: #16231A;
+    --ink: #E8EFE2;
+    --muted: #9DB0A0;
+    --line: #2B3E2F;
+    --field: #6DB77C;
+    --mustard: #E7B422;
+    --mustard-text: #2A2000;
+    --water: #4CB6C7;
+    --alert: #E8806C;
+
+    --surface: var(--paper);
+    --border: var(--line);
+    --text-main: var(--ink);
+    --text-muted: var(--muted);
+
+    /* Soil Cross-Section Layers Dark */
+    --soil-topsoil: #3B3226;
+    --soil-clay: #2F261B;
+    --soil-sand: #4A3E2D;
+    --soil-aquifer: #12343A;
+    --soil-waterline: var(--water);
+  }
+}
+
+/* Accessible Focus States */
+:focus-visible {
+  outline: 3px solid var(--mustard);
+  outline-offset: 2px;
+}
+
+/* Respect Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

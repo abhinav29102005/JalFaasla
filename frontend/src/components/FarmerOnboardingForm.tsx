@@ -1,13 +1,4 @@
 import React from 'react';
-import { 
-  MapPin, 
-  Layers, 
-  Gauge, 
-  Zap, 
-  Calendar, 
-  Droplets,
-  CheckCircle2
-} from 'lucide-react';
 import { PUNJAB_DISTRICTS, PunjabDistrict, PunjabBlock } from '../data/punjabData';
 import { CROPS_DATA } from '../data/cropsData';
 import { FarmerAdvisoryInput } from '../utils/advisoryEngine';
@@ -20,6 +11,7 @@ interface FarmerOnboardingFormProps {
   onApplyPreset: (presetName: 'ludhiana' | 'sangrur' | 'bet') => void;
   isEvaluating?: boolean;
   apiStatus?: 'connected' | 'syncing' | 'offline' | 'error';
+  onEvaluateClick?: () => void;
 }
 
 export const FarmerOnboardingForm: React.FC<FarmerOnboardingFormProps> = ({
@@ -28,7 +20,7 @@ export const FarmerOnboardingForm: React.FC<FarmerOnboardingFormProps> = ({
   onChange,
   onApplyPreset,
   isEvaluating = false,
-  apiStatus = 'connected',
+  onEvaluateClick,
 }) => {
   const t = TRANSLATIONS[currentLang];
 
@@ -61,135 +53,111 @@ export const FarmerOnboardingForm: React.FC<FarmerOnboardingFormProps> = ({
     }
   };
 
+  // Determine which preset is currently active
+  const isLudhianaPreset = input.block.id === 'jagraon' && input.landSizeAcres === 3 && input.currentCropId === 'pusa44';
+  const isSangrurPreset = input.block.id === 'sangrur' && input.tubewellDepthM === 32;
+  const isBetPreset = input.block.id === 'sidhwan-bet' && input.currentCropId === 'pr121';
+
   return (
-    <div className="card onboarding-card">
-      <div className="form-header-row">
+    <div className="onboarding-form-flat">
+      {/* Form Header without outer card */}
+      <div className="form-header-bar">
         <div>
-          <div className="flex items-center gap-2" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-            <h2 className="section-title" style={{ margin: 0 }}>
-              <MapPin className="section-title-icon text-blue" size={22} />
-              {currentLang === 'pa' ? '1. ਖੇਤ ਅਤੇ ਟਿਊਬਵੈੱਲ ਦੀ ਜਾਣਕਾਰੀ' : currentLang === 'hi' ? '1. खेत एवं ट्यूबवेल विवरण' : '1. Enter Farm & Tube-Well Details'}
-            </h2>
-            <span 
-              className={`api-sync-badge ${isEvaluating ? 'syncing' : apiStatus === 'offline' ? 'offline' : 'connected'}`}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '5px',
-                fontSize: '11px',
-                fontWeight: 600,
-                padding: '2px 8px',
-                borderRadius: '12px',
-                background: isEvaluating ? 'rgba(6, 182, 212, 0.15)' : apiStatus === 'offline' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)',
-                color: isEvaluating ? '#06b6d4' : apiStatus === 'offline' ? '#f87171' : '#10b981',
-                border: `1px solid ${isEvaluating ? 'rgba(6, 182, 212, 0.3)' : apiStatus === 'offline' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.3)'}`
-              }}
-            >
-              <span 
-                style={{ 
-                  width: '6px', 
-                  height: '6px', 
-                  borderRadius: '50%', 
-                  background: isEvaluating ? '#06b6d4' : apiStatus === 'offline' ? '#f87171' : '#10b981',
-                  animation: isEvaluating ? 'pulse 1s infinite' : 'none' 
-                }} 
-              />
-              {isEvaluating 
-                ? (currentLang === 'pa' ? 'ਕੰਪਿਊਟਿੰਗ... (AWS API)' : 'Calculating (AWS API)...')
-                : (currentLang === 'pa' ? 'AWS ਲਾਈਵ ਜੁੜਿਆ' : 'AWS API Gateway Connected')}
-            </span>
-          </div>
-          <p className="section-subtitle">
+          <h2 className="form-title">
+            {currentLang === 'pa' ? '1. ਖੇਤ ਅਤੇ ਟਿਊਬਵੈੱਲ ਦਾ ਵੇਰਵਾ' : currentLang === 'hi' ? '1. खेत एवं ट्यूबवेल विवरण' : '1. Farm & tube-well details'}
+          </h2>
+          <p className="form-subtitle">
             {currentLang === 'pa'
-              ? 'ਆਪਣਾ ਜ਼ਿਲ੍ਹਾ, ਪਿੰਡ ਦਾ ਬਲਾਕ, ਟਿਊਬਵੈੱਲ ਦੀ ਡੂੰਘਾਈ ਅਤੇ ਫਸਲ ਚੁਣੋ'
-              : 'Select your Punjab district, block, actual tube-well water depth and crop plan'}
+              ? 'ਜ਼ਿਲ੍ਹਾ, ਬਲਾਕ, ਟਿਊਬਵੈੱਲ ਦੀ ਡੂੰਘਾਈ ਅਤੇ ਫਸਲ ਚੁਣੋ'
+              : currentLang === 'hi'
+              ? 'जिला, ब्लॉक, ट्यूबवेल गहराई और फसल चुनें'
+              : 'Select district, block, actual tube-well water depth, and planned crop'}
           </p>
         </div>
 
-
-        {/* Real-World Quick Scenarios */}
-        <div className="presets-block">
-          <span className="presets-title">
-            {currentLang === 'pa' ? 'ਅਸਲ ਪੰਜਾਬ ਉਦਾਹਰਣਾਂ:' : 'Real Punjab Scenarios:'}
+        {/* Presets as buttons with 5px green inset left bar when selected */}
+        <div className="presets-wrapper" role="group" aria-label="Presets">
+          <span className="presets-label">
+            {currentLang === 'pa' ? 'ਉਦਾਹਰਣਾਂ:' : 'Presets:'}
           </span>
-          <div className="presets-group">
+          <div className="presets-button-row">
             <button
               type="button"
-              className="preset-button preset-primary"
+              className={`preset-bar-btn ${isLudhianaPreset ? 'selected' : ''}`}
               onClick={() => onApplyPreset('ludhiana')}
             >
-              🌾 {currentLang === 'pa' ? 'ਲੁਧਿਆਣਾ (ਜਗਰਾਓਂ 18m ਟਿਊਬਵੈੱਲ)' : 'Ludhiana: Jagraon (18m Tube-well)'}
+              {currentLang === 'pa' ? 'ਲੁਧਿਆਣਾ (ਜਗਰਾਓਂ 18m)' : 'Ludhiana: Jagraon (18m)'}
             </button>
             <button
               type="button"
-              className="preset-button"
+              className={`preset-bar-btn ${isSangrurPreset ? 'selected' : ''}`}
               onClick={() => onApplyPreset('sangrur')}
             >
-              ⚠️ {currentLang === 'pa' ? 'ਸੰਗਰੂਰ (32m ਡੂੰਘਾ ਡਾਰਕ ਜ਼ੋਨ)' : 'Sangrur: Deep Dark Zone (32m)'}
+              {currentLang === 'pa' ? 'ਸੰਗਰੂਰ (ਡਾਰਕ ਜ਼ੋਨ 32m)' : 'Sangrur: Dark zone (32m)'}
             </button>
             <button
               type="button"
-              className="preset-button"
+              className={`preset-bar-btn ${isBetPreset ? 'selected' : ''}`}
               onClick={() => onApplyPreset('bet')}
             >
-              💧 {currentLang === 'pa' ? 'ਸਿੱਧਵਾਂ ਬੇਟ (12m ਨਹਿਰੀ ਇਲਾਕਾ)' : 'Sidhwan Bet: Canal Belt (12m)'}
+              {currentLang === 'pa' ? 'ਸਿੱਧਵਾਂ ਬੇਟ (ਨਹਿਰੀ 12m)' : 'Sidhwan Bet: Canal belt (12m)'}
             </button>
           </div>
         </div>
       </div>
 
-      <form className="form-grid" onSubmit={e => e.preventDefault()}>
+      <form className="form-fields-grid" onSubmit={e => e.preventDefault()}>
         {/* District */}
-        <div className="form-field">
-          <label className="field-label" htmlFor="district-select">
-            {t.district} (ਜ਼ਿਲ੍ਹਾ)
+        <div className="input-field-group">
+          <label className="input-label" htmlFor="district-select">
+            {t.district}
           </label>
           <select
             id="district-select"
-            className="field-input"
+            className="styled-select"
             value={currentDistrict.id}
             onChange={e => handleDistrictChange(e.target.value)}
           >
             {PUNJAB_DISTRICTS.map((d: PunjabDistrict) => (
               <option key={d.id} value={d.id}>
                 {currentLang === 'pa' ? d.namePa : currentLang === 'hi' ? d.nameHi : d.name}
-                {d.isLudhianaBelt ? ' (ਕੇਂਦਰੀ ਪੱਟੀ / Central Belt)' : ''}
+                {d.isLudhianaBelt ? (currentLang === 'pa' ? ' (ਕੇਂਦਰੀ ਪੱਟੀ)' : ' (Central belt)') : ''}
               </option>
             ))}
           </select>
         </div>
 
         {/* Block */}
-        <div className="form-field">
-          <label className="field-label" htmlFor="block-select">
-            {t.block} (ਤਹਿਸੀਲ / ਬਲਾਕ)
+        <div className="input-field-group">
+          <label className="input-label" htmlFor="block-select">
+            {t.block}
           </label>
           <select
             id="block-select"
-            className="field-input"
+            className="styled-select"
             value={input.block.id}
             onChange={e => handleBlockChange(e.target.value)}
           >
             {currentDistrict.blocks.map((b: PunjabBlock) => (
               <option key={b.id} value={b.id}>
-                {currentLang === 'pa' ? b.namePa : currentLang === 'hi' ? b.nameHi : b.name} 
-                {` — ਪਾਣੀ: ${b.waterTableDepthM}m (${b.cgwbCategory})`}
+                {currentLang === 'pa' ? b.namePa : currentLang === 'hi' ? b.nameHi : b.name}
+                {` — ${b.waterTableDepthM}m (${b.cgwbCategory})`}
               </option>
             ))}
           </select>
         </div>
 
-        {/* Land Size */}
-        <div className="form-field">
-          <div className="field-label-split">
-            <label className="field-label" htmlFor="land-size-input">
-              {t.landSizeAcre} (ਜ਼ਮੀਨ ਏਕੜ ਵਿੱਚ)
+        {/* Land Size (Slider + Number input side by side, right-aligned in green) */}
+        <div className="input-field-group">
+          <div className="label-with-value-row">
+            <label className="input-label" htmlFor="land-size-input">
+              {t.landSizeAcre}
             </label>
-            <span className="field-highlight-num">
-              {input.landSizeAcres} ਏਕੜ (Acres)
+            <span className="field-value-green font-mono">
+              {input.landSizeAcres} {currentLang === 'pa' ? 'ਏਕੜ' : 'acres'}
             </span>
           </div>
-          <div className="slider-input-group">
+          <div className="slider-number-pair">
             <input
               type="range"
               id="land-size-slider"
@@ -198,7 +166,8 @@ export const FarmerOnboardingForm: React.FC<FarmerOnboardingFormProps> = ({
               step="0.5"
               value={input.landSizeAcres}
               onChange={e => onChange({ ...input, landSizeAcres: parseFloat(e.target.value) || 1 })}
-              className="styled-slider"
+              className="styled-range-slider"
+              aria-label="Land size in acres"
             />
             <input
               type="number"
@@ -208,23 +177,22 @@ export const FarmerOnboardingForm: React.FC<FarmerOnboardingFormProps> = ({
               step="0.5"
               value={input.landSizeAcres}
               onChange={e => onChange({ ...input, landSizeAcres: Math.max(0.5, parseFloat(e.target.value) || 1) })}
-              className="field-input field-input-small font-mono"
+              className="styled-number-input font-mono"
             />
           </div>
         </div>
 
-        {/* Tube-well depth */}
-        <div className="form-field">
-          <div className="field-label-split">
-            <label className="field-label" htmlFor="tubewell-depth-input">
-              <Gauge size={15} className="inline-icon text-blue" />
-              {t.tubewellDepthM} (ਟਿਊਬਵੈੱਲ ਪਾਣੀ ਦਾ ਪੱਧਰ)
+        {/* Tube-Well Depth (Slider + Number input side by side, right-aligned in green) */}
+        <div className="input-field-group">
+          <div className="label-with-value-row">
+            <label className="input-label" htmlFor="tubewell-depth-input">
+              {t.tubewellDepthM}
             </label>
-            <span className="field-highlight-num text-cyan">
-              {input.tubewellDepthM} ਮੀਟਰ (~{Math.round(input.tubewellDepthM * 3.28)} ਫੁੱਟ)
+            <span className="field-value-green font-mono">
+              {input.tubewellDepthM} m (~{Math.round(input.tubewellDepthM * 3.28)} ft)
             </span>
           </div>
-          <div className="slider-input-group">
+          <div className="slider-number-pair">
             <input
               type="range"
               id="tubewell-depth-slider"
@@ -233,7 +201,8 @@ export const FarmerOnboardingForm: React.FC<FarmerOnboardingFormProps> = ({
               step="0.5"
               value={input.tubewellDepthM}
               onChange={e => onChange({ ...input, tubewellDepthM: parseFloat(e.target.value) || 10 })}
-              className="styled-slider"
+              className="styled-range-slider"
+              aria-label="Tubewell water depth in meters"
             />
             <input
               type="number"
@@ -243,19 +212,19 @@ export const FarmerOnboardingForm: React.FC<FarmerOnboardingFormProps> = ({
               step="0.5"
               value={input.tubewellDepthM}
               onChange={e => onChange({ ...input, tubewellDepthM: parseFloat(e.target.value) || 10 })}
-              className="field-input field-input-small font-mono"
+              className="styled-number-input font-mono"
             />
           </div>
         </div>
 
         {/* Current Crop */}
-        <div className="form-field">
-          <label className="field-label" htmlFor="current-crop-select">
-            {t.currentCrop} (ਮੌਜੂਦਾ ਬੀਜੀ ਜਾਣ ਵਾਲੀ ਕਿਸਮ)
+        <div className="input-field-group">
+          <label className="input-label" htmlFor="current-crop-select">
+            {t.currentCrop}
           </label>
           <select
             id="current-crop-select"
-            className="field-input"
+            className="styled-select"
             value={input.currentCropId}
             onChange={e => onChange({ ...input, currentCropId: e.target.value })}
           >
@@ -268,109 +237,126 @@ export const FarmerOnboardingForm: React.FC<FarmerOnboardingFormProps> = ({
         </div>
 
         {/* Soil Type */}
-        <div className="form-field">
-          <label className="field-label" htmlFor="soil-type-select">
-            <Layers size={15} className="inline-icon text-blue" />
-            {t.soilType} (ਜ਼ਮੀਨ / ਮਿੱਟੀ)
+        <div className="input-field-group">
+          <label className="input-label" htmlFor="soil-type-select">
+            {t.soilType}
           </label>
           <select
             id="soil-type-select"
-            className="field-input"
+            className="styled-select"
             value={input.soilType}
             onChange={e => onChange({ ...input, soilType: e.target.value })}
           >
-            <option value="Sandy Loam">ਰੇਤਲੀ ਦੋਮਟ (Sandy Loam - ਲੁਧਿਆਣਾ ਵਿੱਚ ਆਮ)</option>
-            <option value="Clayey Loam">ਚੀਕਣੀ ਦੋਮਟ (Clayey Loam - ਪਾਣੀ ਰੋਕੂ)</option>
-            <option value="Silt Loam">ਗਲਦਾਰ ਦੋਮਟ (Silt Loam)</option>
-            <option value="Alluvial">ਬੇਟ ਜਲੋਢ (Alluvial Sutlej Belt)</option>
+            <option value="Sandy Loam">Sandy loam (ਰੇਤਲੀ ਦੋਮਟ)</option>
+            <option value="Clayey Loam">Clayey loam (ਚੀਕਣੀ ਦੋਮਟ)</option>
+            <option value="Silt Loam">Silt loam (ਗਲਦਾਰ ਦੋਮਟ)</option>
+            <option value="Alluvial">Alluvial Sutlej belt (ਬੇਟ ਜਲੋਢ)</option>
           </select>
         </div>
 
-        {/* Pump Motor HP */}
-        <div className="form-field">
-          <label className="field-label" htmlFor="pump-hp-select">
-            <Zap size={15} className="inline-icon text-amber" />
-            {t.pumpHp} (ਸਬਮਰਸੀਬਲ ਮੋਟਰ ਦੀ ਪਾਵਰ)
+        {/* Pump HP */}
+        <div className="input-field-group">
+          <label className="input-label" htmlFor="pump-hp-select">
+            {t.pumpHp}
           </label>
           <select
             id="pump-hp-select"
-            className="field-input"
+            className="styled-select"
             value={input.pumpHp}
             onChange={e => onChange({ ...input, pumpHp: parseFloat(e.target.value) || 10 })}
           >
-            <option value="7.5">7.5 HP (ਸ਼ੈਲੋ ਬੋਰ ਮੋਟਰ)</option>
-            <option value="10">10 HP (ਲੁਧਿਆਣਾ ਆਮ ਟਿਊਬਵੈੱਲ ~28 m³/ਘੰਟਾ)</option>
-            <option value="12.5">12.5 HP (ਡੂੰਘਾ ਬੋਰ)</option>
-            <option value="15">15 HP (ਵੱਡਾ ਡਿਸਚਾਰਜ ਡੂੰਘੀ ਮੋਟਰ)</option>
+            <option value="7.5">7.5 HP</option>
+            <option value="10">10 HP</option>
+            <option value="12.5">12.5 HP</option>
+            <option value="15">15 HP</option>
           </select>
         </div>
 
         {/* Power Source */}
-        <div className="form-field">
-          <label className="field-label">
-            {t.powerSource} (ਪਾਵਰ ਦਾ ਸਾਧਨ)
+        <div className="input-field-group">
+          <label className="input-label">
+            {t.powerSource}
           </label>
-          <div className="button-choice-row">
+          <div className="power-source-row" role="group" aria-label="Power source">
             <button
               type="button"
-              className={`choice-btn ${input.powerSource === 'diesel' ? 'active' : ''}`}
+              className={`choice-bar-btn ${input.powerSource === 'diesel' ? 'selected' : ''}`}
               onClick={() => onChange({ ...input, powerSource: 'diesel' })}
             >
-              🛢️ ਡੀਜ਼ਲ ਪੰਪ (Diesel @₹88/L)
+              {currentLang === 'pa' ? 'ਡੀਜ਼ਲ (Diesel)' : 'Diesel (@₹88/L)'}
             </button>
             <button
               type="button"
-              className={`choice-btn ${input.powerSource === 'electric' ? 'active' : ''}`}
+              className={`choice-bar-btn ${input.powerSource === 'electric' ? 'selected' : ''}`}
               onClick={() => onChange({ ...input, powerSource: 'electric' })}
             >
-              ⚡ ਬਿਜਲੀ ਟਿਊਬਵੈੱਲ (Electric)
+              {currentLang === 'pa' ? 'ਬਿਜਲੀ (Electric)' : 'Electric'}
             </button>
             <button
               type="button"
-              className={`choice-btn ${input.powerSource === 'solar' ? 'active' : ''}`}
+              className={`choice-bar-btn ${input.powerSource === 'solar' ? 'selected' : ''}`}
               onClick={() => onChange({ ...input, powerSource: 'solar' })}
             >
-              ☀️ ਸੋਲਰ ਪੰਪ (Solar)
+              {currentLang === 'pa' ? 'ਸੋਲਰ (Solar)' : 'Solar'}
             </button>
           </div>
         </div>
 
         {/* Irrigation Method */}
-        <div className="form-field">
-          <label className="field-label" htmlFor="irrigation-method-select">
-            <Droplets size={15} className="inline-icon text-blue" />
-            {t.irrigationMethod} (ਸਿੰਚਾਈ ਦਾ ਤਰੀਕਾ)
+        <div className="input-field-group">
+          <label className="input-label" htmlFor="irrigation-method-select">
+            {t.irrigationMethod}
           </label>
           <select
             id="irrigation-method-select"
-            className="field-input"
+            className="styled-select"
             value={input.irrigationMethod}
             onChange={e => onChange({ ...input, irrigationMethod: e.target.value as any })}
           >
-            <option value="flooding">ਲਗਾਤਾਰ ਖੜ੍ਹਾ ਪਾਣੀ (Conventional Flooding 5-7cm)</option>
-            <option value="awd">ਬਦਲਵੀਂ ਸੁੱਕੀ-ਗਿੱਲੀ ਸਿੰਚਾਈ (AWD Pani-Pipe - 25% ਬੱਚਤ)</option>
-            <option value="dsr">ਸਿੱਧੀ ਬਿਜਾਈ ਝੋਨਾ (DSR Tar-Wattar)</option>
+            <option value="flooding">
+              {currentLang === 'pa' ? 'ਲਗਾਤਾਰ ਖੜ੍ਹਾ ਪਾਣੀ (Conventional flooding)' : 'Conventional continuous flooding (5-7cm)'}
+            </option>
+            <option value="awd">
+              {currentLang === 'pa' ? 'ਬਦਲਵੀਂ ਸਿੰਚਾਈ (AWD pani-pipe - 25% ਬੱਚਤ)' : 'Alternate wetting and drying (AWD pani-pipe)'}
+            </option>
+            <option value="dsr">
+              {currentLang === 'pa' ? 'ਸਿੱਧੀ ਬਿਜਾਈ (DSR tar-wattar)' : 'Direct seeded rice (DSR tar-wattar)'}
+            </option>
           </select>
         </div>
 
         {/* Planned Date */}
-        <div className="form-field">
-          <label className="field-label" htmlFor="planned-date-input">
-            <Calendar size={15} className="inline-icon text-blue" />
-            {t.plannedDate} (ਝੋਨਾ ਲਾਉਣ ਦੀ ਸੋਚੀ ਹੋਈ ਮਿਤੀ)
+        <div className="input-field-group">
+          <label className="input-label" htmlFor="planned-date-input">
+            {t.plannedDate}
           </label>
           <input
             type="date"
             id="planned-date-input"
-            className="field-input font-mono"
+            className="styled-select font-mono"
             value={input.plannedDate}
             onChange={e => onChange({ ...input, plannedDate: e.target.value })}
           />
-          <div className="field-note">
-            ਸਰਕਾਰੀ ਨੋਟੀਫਾਈਡ ਮਿਤੀ: <strong>{input.block.notifiedTransplantDate}</strong> (ਲੁਧਿਆਣਾ ਕੇਂਦਰੀ ਪੱਟੀ)
-          </div>
+          <span className="field-helper-text">
+            {currentLang === 'pa'
+              ? `ਨੋਟੀਫਾਈਡ ਮਿਤੀ: ${input.block.notifiedTransplantDate}`
+              : `Notified date: ${input.block.notifiedTransplantDate}`}
+          </span>
         </div>
       </form>
+
+      {/* Primary Action Button (Flat Mustard, 56px high) */}
+      <div className="form-action-row">
+        <button
+          type="button"
+          className="btn-primary-mustard"
+          onClick={onEvaluateClick}
+        >
+          {isEvaluating
+            ? (currentLang === 'pa' ? 'ਹਿਸਾਬ ਲਗਾਇਆ ਜਾ ਰਿਹਾ ਹੈ...' : 'Evaluating farm...')
+            : (currentLang === 'pa' ? 'ਨਵੀਂ ਸਲਾਹ ਅਤੇ ਬੱਚਤ ਵੇਖੋ' : 'Calculate savings & advisory')}
+        </button>
+      </div>
     </div>
   );
 };

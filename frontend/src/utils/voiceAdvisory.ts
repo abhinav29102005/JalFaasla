@@ -71,3 +71,8 @@ export function stopVoiceAdvisory(): void {
     currentUtterance = null;
   }
 }
+
+// Resilient aliases for backwards compatibility
+export const speakPunjabiAdvisory = playPunjabiAdvisory;
+export const stopSpeaking = stopVoiceAdvisory;
+

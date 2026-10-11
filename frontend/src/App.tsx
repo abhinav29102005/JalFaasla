@@ -1,43 +1,18 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { 
-  Header 
-} from './components/Header';
-import { 
-  FarmerOnboardingForm 
-} from './components/FarmerOnboardingForm';
-import { 
-  GroundwaterScorecard 
-} from './components/GroundwaterScorecard';
-import { 
-  PunjabGisMap 
-} from './components/PunjabGisMap';
-import { 
-  LegalComplianceAlert 
-} from './components/LegalComplianceAlert';
-import { 
-  CropFitComparison 
-} from './components/CropFitComparison';
-import { 
-  IrrigationScheduler 
-} from './components/IrrigationScheduler';
-import { 
-  FarmerReportLoop 
-} from './components/FarmerReportLoop';
-import { 
-  ConversationalAdvisor 
-} from './components/ConversationalAdvisor';
-import { 
-  ShareableAdvisoryModal 
-} from './components/ShareableAdvisoryModal';
-import { 
-  AwsArchitectureModal 
-} from './components/AwsArchitectureModal';
-import { 
-  SmsAlertModal 
-} from './components/SmsAlertModal';
-import { 
-  Footer 
-} from './components/Footer';
+import { Header } from './components/Header';
+import { FarmerOnboardingForm } from './components/FarmerOnboardingForm';
+import { GroundwaterGauge } from './components/GroundwaterGauge';
+import { GroundwaterScorecard } from './components/GroundwaterScorecard';
+import { PunjabGisMap } from './components/PunjabGisMap';
+import { LegalComplianceAlert } from './components/LegalComplianceAlert';
+import { CropFitComparison } from './components/CropFitComparison';
+import { IrrigationScheduler } from './components/IrrigationScheduler';
+import { FarmerReportLoop } from './components/FarmerReportLoop';
+import { ConversationalAdvisor } from './components/ConversationalAdvisor';
+import { ShareableAdvisoryModal } from './components/ShareableAdvisoryModal';
+import { AwsArchitectureModal } from './components/AwsArchitectureModal';
+import { SmsAlertModal } from './components/SmsAlertModal';
+import { Footer } from './components/Footer';
 
 import { PUNJAB_DISTRICTS, PunjabBlock } from './data/punjabData';
 import { Language } from './data/translations';
@@ -51,17 +26,6 @@ import {
   GroundwaterBlockInfo, 
   WeatherForecastResponse 
 } from './services/api';
-
-import { 
-  LayoutDashboard, 
-  BarChart3, 
-  Activity, 
-  CloudRain, 
-  Scale, 
-  Users, 
-  Bot,
-  Compass
-} from 'lucide-react';
 
 export const App: React.FC = () => {
   const [currentLang, setCurrentLang] = useState<Language>('en');
@@ -159,21 +123,23 @@ export const App: React.FC = () => {
     if (est) {
       merged.recommendedShortPaddyAwd = {
         ...merged.recommendedShortPaddyAwd,
-        tubewellHoursSaved: est.tubewell_hours_saved,
-        costSavedInr: est.diesel_or_electricity_cost_saved_inr,
-        waterSavedM3Total: est.water_saved_cubic_meters,
+        tubewellHoursSaved: est.tubewell_hours_saved ?? merged.recommendedShortPaddyAwd.tubewellHoursSaved,
+        costSavedInr: est.diesel_or_electricity_cost_saved_inr ?? merged.recommendedShortPaddyAwd.costSavedInr,
+        waterSavedM3Total: est.water_saved_cubic_meters ?? merged.recommendedShortPaddyAwd.waterSavedM3Total,
       };
       if (est.summary_farmer_message) {
         merged.headlinePunchline = est.summary_farmer_message;
-        merged.headlinePunchlinePa = `ਤੁਹਾਡੇ ${input.landSizeAcres} ਏਕੜ ਖੇਤ ਲਈ, ਪੀਏਯੂ ਪੀਆਰ-126 ਬੀਜਣ ਅਤੇ ਪਾਣੀ-ਪਾਈਪ (AWD) ਨਾਲ ਲਗਭਗ ${est.tubewell_hours_saved} ਘੰਟੇ ਟਿਊਬਵੈੱਲ ਅਤੇ ₹${est.diesel_or_electricity_cost_saved_inr.toLocaleString('en-IN')} ਦੀ ਬੱਚਤ ਹੋਵੇਗੀ।`;
+        const savedCost = est.diesel_or_electricity_cost_saved_inr ?? merged.recommendedShortPaddyAwd.costSavedInr ?? 0;
+        merged.headlinePunchlinePa = `ਤੁਹਾਡੇ ${input.landSizeAcres} ਏਕੜ ਖੇਤ ਲਈ, ਪੀਏਯੂ ਪੀਆਰ-126 ਬੀਜਣ ਅਤੇ ਪਾਣੀ-ਪਾਈਪ (AWD) ਨਾਲ ਲਗਭਗ ${est.tubewell_hours_saved} ਘੰਟੇ ਟਿਊਬਵੈੱਲ ਅਤੇ ₹${savedCost.toLocaleString('en-IN')} ਦੀ ਬੱਚਤ ਹੋਵੇਗੀ।`;
       }
     }
 
     if (leg) {
+      const penaltyAmount = leg.penalty_risk_inr ?? (leg as any).potential_penalty_inr ?? (leg as any).penalty_inr ?? merged.legalCheck.penaltyRiskInr ?? 0;
       merged.legalCheck = {
         ...merged.legalCheck,
-        isCompliant: leg.is_compliant,
-        penaltyRiskInr: leg.penalty_risk_inr,
+        isCompliant: leg.is_compliant ?? (leg as any).isCompliant ?? merged.legalCheck.isCompliant,
+        penaltyRiskInr: penaltyAmount,
       };
     }
 
@@ -252,95 +218,105 @@ export const App: React.FC = () => {
         isLegalViolation={!advisory.legalCheck.isCompliant}
       />
 
-      {/* Symmetrical Section Navigation Control */}
-      <nav className="subnav-wrapper" aria-label="Advisory Navigation">
+      {/* Tabs Navigation: Plain text, 4px mustard underline on active, scrollable on mobile */}
+      <nav className="tabs-nav-bar" aria-label="Advisory navigation tabs">
         <div className="app-container">
-          <div className="subnav-segmented-control">
+          <div className="tabs-nav-scroll">
             <button
               type="button"
-              className={`subnav-item ${activeTab === 'all' ? 'active' : ''}`}
+              className={`tab-nav-btn ${activeTab === 'all' ? 'active' : ''}`}
               onClick={() => setActiveTab('all')}
             >
-              <LayoutDashboard size={15} />
-              <span>{currentLang === 'pa' ? 'ਸਭ ਵੇਰਵੇ (All)' : 'Full Advisory'}</span>
+              {currentLang === 'pa' ? 'ਸਭ ਵੇਰਵੇ' : 'Full advisory'}
             </button>
             <button
               type="button"
-              className={`subnav-item ${activeTab === 'advisory' ? 'active' : ''}`}
+              className={`tab-nav-btn ${activeTab === 'advisory' ? 'active' : ''}`}
               onClick={() => setActiveTab('advisory')}
             >
-              <BarChart3 size={15} />
-              <span>{currentLang === 'pa' ? 'ਫਸਲ ਤੇ ਬੱਚਤ' : 'Crop Economics'}</span>
+              {currentLang === 'pa' ? 'ਫਸਲ ਤੇ ਬੱਚਤ' : 'Crop economics'}
             </button>
             <button
               type="button"
-              className={`subnav-item ${activeTab === 'groundwater' ? 'active' : ''}`}
+              className={`tab-nav-btn ${activeTab === 'groundwater' ? 'active' : ''}`}
               onClick={() => setActiveTab('groundwater')}
             >
-              <Activity size={15} />
-              <span>{currentLang === 'pa' ? 'ਪਾਣੀ ਸੰਕਟ' : 'Water Stress'}</span>
+              {currentLang === 'pa' ? 'ਪਾਣੀ ਸੰਕਟ' : 'Water stress'}
             </button>
             <button
               type="button"
-              className={`subnav-item ${activeTab === 'map' ? 'active' : ''}`}
+              className={`tab-nav-btn ${activeTab === 'map' ? 'active' : ''}`}
               onClick={() => setActiveTab('map')}
             >
-              <Compass size={15} />
-              <span>{currentLang === 'pa' ? 'GIS ਨਕਸ਼ਾ' : 'GIS Map'}</span>
+              {currentLang === 'pa' ? 'GIS ਨਕਸ਼ਾ' : 'GIS map'}
             </button>
             <button
               type="button"
-              className={`subnav-item ${activeTab === 'irrigation' ? 'active' : ''}`}
+              className={`tab-nav-btn ${activeTab === 'irrigation' ? 'active' : ''}`}
               onClick={() => setActiveTab('irrigation')}
             >
-              <CloudRain size={15} />
-              <span>{currentLang === 'pa' ? 'ਸਿੰਚਾਈ ਸ਼ਡਿਊਲ' : 'Irrigation'}</span>
+              {currentLang === 'pa' ? 'ਸਿੰਚਾਈ ਸ਼ਡਿਊਲ' : 'Irrigation'}
             </button>
             <button
               type="button"
-              className={`subnav-item ${activeTab === 'legal' ? 'active' : ''}`}
+              className={`tab-nav-btn ${activeTab === 'legal' ? 'active' : ''}`}
               onClick={() => setActiveTab('legal')}
             >
-              <Scale size={15} />
-              <span>{currentLang === 'pa' ? 'ਕਾਨੂੰਨੀ ਨਿਯਮ' : 'Legal Rules'}</span>
+              {currentLang === 'pa' ? 'ਕਾਨੂੰਨੀ ਨਿਯਮ' : 'Legal rules'}
             </button>
             <button
               type="button"
-              className={`subnav-item ${activeTab === 'report' ? 'active' : ''}`}
+              className={`tab-nav-btn ${activeTab === 'report' ? 'active' : ''}`}
               onClick={() => setActiveTab('report')}
             >
-              <Users size={15} />
-              <span>{currentLang === 'pa' ? 'ਪਿੰਡ ਰਿਪੋਰਟਾਂ' : 'Village Feed'}</span>
+              {currentLang === 'pa' ? 'ਪਿੰਡ ਰਿਪੋਰਟਾਂ' : 'Village feed'}
             </button>
             <button
               type="button"
-              className={`subnav-item ${activeTab === 'ai' ? 'active' : ''}`}
+              className={`tab-nav-btn ${activeTab === 'ai' ? 'active' : ''}`}
               onClick={() => setActiveTab('ai')}
             >
-              <Bot size={15} />
-              <span>{currentLang === 'pa' ? 'ਏ.ਆਈ. ਸਲਾਹਕਾਰ' : 'AI Agronomist'}</span>
+              {currentLang === 'pa' ? 'ਏ.ਆਈ. ਸਲਾਹਕਾਰ' : 'AI advisor'}
             </button>
           </div>
         </div>
       </nav>
 
-      {/* Main Symmetrical Content Area */}
+      {/* Main Content Layout */}
       <main className="main-content-layout">
         <div className="app-container">
-          <div className="dashboard-content-container">
-            {/* 1. Farmer Configuration Form */}
-            <section className="dashboard-section section-onboarding">
-              <FarmerOnboardingForm
-                currentLang={currentLang}
-                input={input}
-                onChange={setInput}
-                onApplyPreset={handleApplyPreset}
-                isEvaluating={isEvaluating}
-                apiStatus={apiStatus}
-              />
-            </section>
+          <div className="dashboard-content-stack">
+            {/* Advisory Screen: 2 columns (form | 300px sticky gauge); 1 column under 900px with gauge first */}
+            {(activeTab === 'all' || activeTab === 'advisory') && (
+              <section className="advisory-two-col-layout" aria-label="Farmer details and groundwater gauge">
+                <div className="advisory-form-col">
+                  <FarmerOnboardingForm
+                    currentLang={currentLang}
+                    input={input}
+                    onChange={setInput}
+                    onApplyPreset={handleApplyPreset}
+                    isEvaluating={isEvaluating}
+                    apiStatus={apiStatus}
+                    onEvaluateClick={() => {
+                      const el = document.getElementById('section-cropfit');
+                      if (el) {
+                        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      }
+                    }}
+                  />
+                </div>
+                <div className="advisory-gauge-col">
+                  <GroundwaterGauge
+                    depthM={input.tubewellDepthM}
+                    block={input.block}
+                    analysis={analysis}
+                    currentLang={currentLang}
+                  />
+                </div>
+              </section>
+            )}
 
-            {/* 2. Legal Alert & Statutory Notice */}
+            {/* Legal Alert & Statutory Notice */}
             {(activeTab === 'all' || activeTab === 'legal') && (
               <section className="dashboard-section section-legal">
                 <LegalComplianceAlert
@@ -351,9 +327,9 @@ export const App: React.FC = () => {
               </section>
             )}
 
-            {/* 3. The Core Crop-Fit & Savings Punchline */}
+            {/* 50/50 Crop Comparison */}
             {(activeTab === 'all' || activeTab === 'advisory') && (
-              <section className="dashboard-section section-cropfit">
+              <section id="section-cropfit" className="dashboard-section section-cropfit">
                 <CropFitComparison
                   currentLang={currentLang}
                   advisory={advisory}
@@ -361,7 +337,7 @@ export const App: React.FC = () => {
               </section>
             )}
 
-            {/* 4. Interactive GIS Map */}
+            {/* Interactive GIS Map */}
             {(activeTab === 'all' || activeTab === 'map' || activeTab === 'groundwater') && (
               <section className="dashboard-section section-gis-map">
                 <PunjabGisMap
@@ -372,7 +348,7 @@ export const App: React.FC = () => {
               </section>
             )}
 
-            {/* 5. Groundwater Risk Profile Scorecard */}
+            {/* Groundwater Risk Profile Scorecard */}
             {(activeTab === 'all' || activeTab === 'groundwater') && (
               <section className="dashboard-section section-scorecard">
                 <GroundwaterScorecard
@@ -384,7 +360,7 @@ export const App: React.FC = () => {
               </section>
             )}
 
-            {/* 6. 7-Day Rain-Aware Irrigation Scheduler */}
+            {/* 7-Day Rain-Aware Irrigation Scheduler */}
             {(activeTab === 'all' || activeTab === 'irrigation') && (
               <section className="dashboard-section section-irrigation">
                 <IrrigationScheduler
@@ -399,7 +375,7 @@ export const App: React.FC = () => {
               </section>
             )}
 
-            {/* 7. Conversational AI Agronomist */}
+            {/* Conversational AI Agronomist */}
             {(activeTab === 'all' || activeTab === 'ai') && (
               <section className="dashboard-section section-ai">
                 <ConversationalAdvisor
@@ -408,7 +384,7 @@ export const App: React.FC = () => {
               </section>
             )}
 
-            {/* 8. Farmer Ground-Truth Crowdsourced Loop */}
+            {/* Farmer Ground-Truth Crowdsourced Loop */}
             {(activeTab === 'all' || activeTab === 'report') && (
               <section className="dashboard-section section-report">
                 <FarmerReportLoop
@@ -461,20 +437,20 @@ export const App: React.FC = () => {
                 <p>
                   The Punjab Preservation of Subsoil Water Act was enacted to arrest the alarming depletion of the groundwater table across Punjab.
                 </p>
-                <h4>Core Statutory Provisions:</h4>
+                <h4>Core statutory provisions:</h4>
                 <ul>
                   <li>
-                    <strong>Section 3(1) - Nursery Sowing:</strong> No farmer shall sow nursery of paddy before the 10th day of May of the agricultural year.
+                    <strong>Section 3(1) — Nursery sowing:</strong> No farmer shall sow nursery of paddy before the 10th day of May of the agricultural year.
                   </li>
                   <li>
-                    <strong>Section 3(2) - Paddy Transplantation:</strong> No farmer shall transplant paddy into the field before the date notified by the State Government for that district (June 11 for Group 1 districts or June 20 for Group 2 districts like Ludhiana, Sangrur, Patiala).
+                    <strong>Section 3(2) — Paddy transplantation:</strong> No farmer shall transplant paddy into the field before the date notified by the State Government for that district (June 11 for Group 1 districts or June 20 for Group 2 districts like Ludhiana, Sangrur, Patiala).
                   </li>
                   <li>
-                    <strong>Section 5 - Penalties & Destruction:</strong> Any farmer violating these dates is liable to a penalty of <strong>₹10,000 per month per hectare</strong> (~₹4,047 per acre/month). The designated Agricultural Officer or Sub-Divisional Magistrate is empowered to enter the land, uproot and plough down the standing crop, and recover all expenses from the violator.
+                    <strong>Section 5 — Penalties & destruction:</strong> Any farmer violating these dates is liable to a penalty of <strong>₹10,000 per month per hectare</strong> (~₹4,047 per acre/month). The designated Agricultural Officer or Sub-Divisional Magistrate is empowered to enter the land, uproot and plough down the standing crop, and recover all expenses from the violator.
                   </li>
                 </ul>
                 <div className="pau-scientific-rationale">
-                  <h5>Scientific Rationale from PAU Ludhiana:</h5>
+                  <h5>Scientific rationale from PAU Ludhiana:</h5>
                   <p>
                     During May and early June, temperatures routinely exceed 42°C–45°C. Evaporation demand is over 8–10 mm/day. Paddy transplanted in early June consumes up to 5,000 liters of groundwater for every single kilogram of rice produced. By delaying transplanting to June 20, the crop's peak vegetative and reproductive stages coincide with the arrival of the South-West Monsoon (July–August), saving 25% to 30% of groundwater without any yield loss.
                   </p>

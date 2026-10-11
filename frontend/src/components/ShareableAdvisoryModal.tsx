@@ -41,8 +41,8 @@ export const ShareableAdvisoryModal: React.FC<ShareableAdvisoryModalProps> = ({
     `"${headlinePunchline}"\n\n` +
     `⚡ *Season Savings Summary:*\n` +
     `• Tube-well Running Saved: *${recommendedShortPaddyAwd.tubewellHoursSaved} Hours*\n` +
-    `• Operating Cost Saved: *₹${recommendedShortPaddyAwd.costSavedInr.toLocaleString('en-IN')}*\n` +
-    `• Groundwater Conserved: *${recommendedShortPaddyAwd.waterSavedM3Total.toLocaleString('en-IN')} m³*\n` +
+    `• Operating Cost Saved: *₹${(recommendedShortPaddyAwd.costSavedInr ?? 0).toLocaleString('en-IN')}*\n` +
+    `• Groundwater Conserved: *${(recommendedShortPaddyAwd.waterSavedM3Total ?? 0).toLocaleString('en-IN')} m³*\n` +
     `• Method: *PR-126 + AWD (Pani-Pipe)*\n\n` +
     `📲 Generated via JalFaasla | Punjab Groundwater Advisory Platform`;
 
@@ -122,7 +122,7 @@ export const ShareableAdvisoryModal: React.FC<ShareableAdvisoryModalProps> = ({
                 <span className="p-m-lbl">Tube-Well Saved</span>
               </div>
               <div className="p-metric-box">
-                <span className="p-m-val font-mono font-bold text-emerald">₹{recommendedShortPaddyAwd.costSavedInr.toLocaleString('en-IN')}</span>
+                <span className="p-m-val font-mono font-bold text-emerald">₹{(recommendedShortPaddyAwd.costSavedInr ?? 0).toLocaleString('en-IN')}</span>
                 <span className="p-m-lbl">Fuel / Power Saved</span>
               </div>
               <div className="p-metric-box">
