@@ -92,31 +92,54 @@ Running traditional virtual servers ([Amazon EC2](https://aws.amazon.com/ec2/)) 
 
 Our backend advisory engine implements the mathematical models developed by the [Food and Agriculture Organization (FAO)](https://www.fao.org/) and calibrated by [Punjab Agricultural University (PAU)](https://www.pau.edu/):
 
-### Formula 1: Crop Evapotranspiration ($ET_c$)
+### Formula 1: Crop Evapotranspiration (ET_c)
 Water consumption is modeled using the FAO-56 Penman-Monteith dual crop coefficient method:
-$$ET_c = ET_0 \times K_c$$
 
-* $ET_0$: Daily reference evapotranspiration (May–June: $8.5 \text{ mm/day}$; July–August: $4.8 \text{ mm/day}$; September: $3.8 \text{ mm/day}$).
-* $K_c$: Crop coefficient (Paddy initial stage: $1.05$; mid-season: $1.20$; late maturity: $0.90$).
+```text
+ET_c = ET₀ × K_c
+```
 
-By shifting transplanting from May 25 to the notified date of June 20, the crop bypasses 26 days of peak evaporative demand, saving:
-$$\Delta W_{\text{evap}} = \sum_{t=\text{May 25}}^{\text{June 20}} ET_{c,\text{early}}(t) - ET_{c,\text{fallow}}(t) \approx 180\text{ to }220\text{ mm} \; (1.8\text{--}2.2\text{ million liters per hectare})$$
+* **ET₀ (Reference Evapotranspiration):** Daily baseline evaporative demand driven by solar radiation, temperature, wind, and relative humidity:
+  * May–June (Pre-Monsoon heat peak): **8.5 mm/day**
+  * July–August (Monsoon season): **4.8 mm/day**
+  * September (Maturity stage): **3.8 mm/day**
+* **K_c (Crop Coefficient):** Crop-specific physiological factor:
+  * Initial vegetative stage: **1.05**
+  * Mid-season reproductive stage: **1.20**
+  * Late maturity stage: **0.90**
+
+By shifting transplanting from May 25 to the state-notified date of June 20, the crop bypasses 26 days of extreme May heat and atmospheric dryness:
+
+```text
+ΔW_evaporation = Σ (ET_early - ET_fallow) ≈ 180 to 220 mm
+```
+*(This translates to saving **1.8 to 2.2 million liters** of extracted groundwater per hectare, or **730,000 to 890,000 liters per acre**).*
 
 ---
 
 ### Formula 2: Tube-Well Pumping Energy & Dynamic Head
-The electrical power required to lift groundwater from deep aquifers is governed by:
-$$P_{\text{hydraulic}} = \frac{\rho \cdot g \cdot Q \cdot H_{\text{dynamic}}}{1000 \cdot \eta_{\text{pump}}}$$
+The electrical and mechanical power required to extract groundwater from deep aquifers is governed by hydraulic head physics:
+
+```text
+                     ρ · g · Q · H_dynamic
+P_hydraulic (kW)  =  ───────────────────────
+                         1000 · η_pump
+```
 
 Where:
-* $\rho = 1000 \text{ kg/m}^3$ (water density)
-* $g = 9.81 \text{ m/s}^2$ (gravitational acceleration)
-* $Q$: Pump discharge rate ($m^3/s$, calibrated by pump HP: $\sim 25\text{--}35 \text{ L/s}$ for 10–12.5 HP pumps)
-* $H_{\text{dynamic}}$: Total dynamic head ($m$) $= \text{Static Water Table} + \text{Drawdown} + \text{Frictional Head Loss}$
-* $\eta_{\text{pump}}$: Operating efficiency of agricultural pump set (calibrated to $0.62$).
+* **ρ (Water Density):** 1,000 kg/m³
+* **g (Gravitational Acceleration):** 9.81 m/s²
+* **Q (Discharge Rate):** Water discharge rate in m³/s (calibrated to ~25–35 L/s for 10–12.5 HP submersible pumps)
+* **H_dynamic (Total Dynamic Head in meters):** Static Water Table Depth + Drawdown during pumping + Frictional Head Loss in delivery pipes
+* **η_pump (Pump Operating Efficiency):** Overall motor-pump efficiency (calibrated to 0.62 / 62% for agricultural pumpsets)
 
-$$\text{Operating Hours Saved} = \frac{\Delta \text{Water Volume Saved } (m^3)}{Q \times 3600}$$
-$$\text{Cost Saved (₹)} = \text{Hours} \times \text{kW rating} \times \text{Effective Tariff Rate (₹/kWh)}$$
+From this hydraulic equation, the seasonal operational savings are computed as:
+
+```text
+Operating Hours Saved = (ΔWater Volume Saved in m³) / (Discharge Rate Q × 3600)
+
+Cost Saved (₹) = Hours Saved × Motor kW Rating × Effective Electricity Tariff (₹/kWh)
+```
 
 ---
 
