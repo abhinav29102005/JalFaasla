@@ -261,7 +261,7 @@ export const PunjabGisMap: React.FC<PunjabGisMapProps> = ({
   const geoJsonLayerRef = useRef<L.GeoJSON | null>(null);
   const blockMarkersLayerRef = useRef<L.FeatureGroup | null>(null);
 
-  const [activeTileLayer, setActiveTileLayer] = useState<"light" | "satellite" | "osm">("light");
+  
   const [activeFeature, setActiveFeature] = useState<{
     title: string;
     titlePa: string;
@@ -310,10 +310,10 @@ export const PunjabGisMap: React.FC<PunjabGisMapProps> = ({
 
     L.control.zoom({ position: "topright" }).addTo(map);
 
-    // Default CartoDB Light Tile Layer
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
-      maxZoom: 19,
-      subdomains: "abcd",
+    // Real Topographic & Road Map Layer (OpenStreetMap)
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 18,
+      attribution: "© OpenStreetMap contributors",
     }).addTo(map);
 
     // 1. Natural Sutlej River Polyline
@@ -536,29 +536,7 @@ export const PunjabGisMap: React.FC<PunjabGisMapProps> = ({
     });
   }, [selectedBlock]);
 
-  // Handle Tile Switching
-  const handleTileSwitch = (layerKey: "light" | "satellite" | "osm") => {
-    if (!mapInstanceRef.current) return;
-    setActiveTileLayer(layerKey);
 
-    mapInstanceRef.current.eachLayer(layer => {
-      if (layer instanceof L.TileLayer) {
-        mapInstanceRef.current?.removeLayer(layer);
-      }
-    });
-
-    let newUrl = "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
-
-    if (layerKey === "satellite") {
-      newUrl = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{x}/{y}";
-    } else if (layerKey === "osm") {
-      newUrl = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
-    }
-
-    L.tileLayer(newUrl, { maxZoom: 18 }).addTo(mapInstanceRef.current);
-    geoJsonLayerRef.current?.bringToFront();
-    blockMarkersLayerRef.current?.bringToFront();
-  };
 
   const handleRecenter = () => {
     if (!mapInstanceRef.current) return;
@@ -615,33 +593,10 @@ export const PunjabGisMap: React.FC<PunjabGisMapProps> = ({
 
       <div className="gis-map-toolbar">
         <div className="gis-layer-toggles">
-          <button 
-            type="button" 
-            className={`gis-tool-btn ${activeTileLayer === "light" ? "active" : ""}`}
-            onClick={() => handleTileSwitch("light")}
-            title="Clean Paper GIS Map"
-          >
-            <Layers size={14} />
-            <span>🗺️ Carto Map</span>
-          </button>
-          <button 
-            type="button" 
-            className={`gis-tool-btn ${activeTileLayer === "satellite" ? "active" : ""}`}
-            onClick={() => handleTileSwitch("satellite")}
-            title="Real Satellite Imagery"
-          >
-            <Layers size={14} />
-            <span>🛰️ Satellite</span>
-          </button>
-          <button 
-            type="button" 
-            className={`gis-tool-btn ${activeTileLayer === "osm" ? "active" : ""}`}
-            onClick={() => handleTileSwitch("osm")}
-            title="OpenStreetMap Topo"
-          >
-            <Layers size={14} />
-            <span>⛰️ Topo / Road</span>
-          </button>
+          <div className="gis-active-layer-badge">
+            <Layers size={14} className="text-field" />
+            <span>🗺️ Punjab Topographic & Road Network (OpenStreetMap)</span>
+          </div>
         </div>
 
         <div className="gis-right-tools">

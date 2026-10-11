@@ -3867,3 +3867,16 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--muted);
   font-weight: normal;
 }
+
+.gis-active-layer-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: var(--bg);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+}
