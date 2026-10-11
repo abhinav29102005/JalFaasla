@@ -1,6 +1,6 @@
 /* ==========================================================================
    JalFaasla (ਜਲ ਫ਼ਾਸਲਾ) Design Tokens
-   Strict Flat Palette • Light Default + prefers-color-scheme Dark
+   Strict Flat Palette • Light Default Matching Reference Design
    ========================================================================== */
 
 :root {
@@ -58,39 +58,35 @@
   --min-touch-target: 44px;
 }
 
-/* Dark Mode Tokens */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #101A12;
-    --paper: #16231A;
-    --ink: #E8EFE2;
-    --muted: #9DB0A0;
-    --line: #2B3E2F;
-    --field: #6DB77C;
-    --mustard: #E7B422;
-    --mustard-text: #2A2000;
-    --water: #4CB6C7;
-    --alert: #E8806C;
-    --caution: #E8B84A;
-    --on-field: #08140B;
+/* Optional explicit dark theme only if applied manually */
+[data-theme="dark"] {
+  --bg: #101A12;
+  --paper: #16231A;
+  --ink: #E8EFE2;
+  --muted: #9DB0A0;
+  --line: #2B3E2F;
+  --field: #6DB77C;
+  --mustard: #E7B422;
+  --mustard-text: #2A2000;
+  --water: #4CB6C7;
+  --alert: #E8806C;
+  --caution: #E8B84A;
+  --on-field: #08140B;
 
-    /* Punjab GIS Map Palette Dark */
-    --map-critical: #E8806C;
-    --map-semi: #E8B84A;
-    --map-safe: #6DB77C;
+  --map-critical: #E8806C;
+  --map-semi: #E8B84A;
+  --map-safe: #6DB77C;
 
-    --surface: var(--paper);
-    --border: var(--line);
-    --text-main: var(--ink);
-    --text-muted: var(--muted);
+  --surface: var(--paper);
+  --border: var(--line);
+  --text-main: var(--ink);
+  --text-muted: var(--muted);
 
-    /* Soil Cross-Section Layers Dark */
-    --soil-topsoil: #3B3226;
-    --soil-clay: #2F261B;
-    --soil-sand: #4A3E2D;
-    --soil-aquifer: #12343A;
-    --soil-waterline: var(--water);
-  }
+  --soil-topsoil: #3B3226;
+  --soil-clay: #2F261B;
+  --soil-sand: #4A3E2D;
+  --soil-aquifer: #12343A;
+  --soil-waterline: var(--water);
 }
 
 /* Accessible Focus States */
