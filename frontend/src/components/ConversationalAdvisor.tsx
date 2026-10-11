@@ -26,10 +26,22 @@ export const ConversationalAdvisor: React.FC<ConversationalAdvisorProps> = ({
   const [messages, setMessages] = useState<ChatMessage[]>(INITIAL_CHAT_MESSAGES);
   const [inputQuery, setInputQuery] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const chatBottomRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const isInitialMount = useRef(true);
 
   useEffect(() => {
-    chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    // Avoid scrolling on initial page load / refresh
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    // Only scroll the internal chat container, never the window
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
   }, [messages, isTyping]);
 
   const handleSend = (text: string) => {
@@ -115,7 +127,7 @@ export const ConversationalAdvisor: React.FC<ConversationalAdvisorProps> = ({
       </div>
 
       {/* Chat Messages Feed */}
-      <div className="ai-chat-thread">
+      <div className="ai-chat-thread" ref={chatContainerRef}>
         {messages.map(msg => (
           <div 
             key={msg.id} 
@@ -196,7 +208,7 @@ export const ConversationalAdvisor: React.FC<ConversationalAdvisorProps> = ({
           </div>
         )}
 
-        <div ref={chatBottomRef} />
+        
       </div>
 
       {/* Bottom Input Area */}
