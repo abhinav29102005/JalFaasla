@@ -4,6 +4,18 @@
 
 ---
 
+## 📌 Live Deployments & Endpoints
+
+| Resource | URL | Infrastructure & Provider |
+| :--- | :--- | :--- |
+| **🌐 Production Web App** | [https://jalfaasla.abhinavkumarsingh.tech/](https://jalfaasla.abhinavkumarsingh.tech/) | Cloudflare Edge CDN + [Amazon S3](https://aws.amazon.com/s3/) Static Website Hosting |
+| **⚡ Serverless Backend API** | [https://ofkasl4fri.execute-api.ap-southeast-2.amazonaws.com](https://ofkasl4fri.execute-api.ap-southeast-2.amazonaws.com) | [Amazon API Gateway](https://aws.amazon.com/api-gateway/) HTTP API + [AWS Lambda](https://aws.amazon.com/lambda/) (Python 3.12) |
+| **🩺 Live API Health Probe** | [https://ofkasl4fri.execute-api.ap-southeast-2.amazonaws.com/health](https://ofkasl4fri.execute-api.ap-southeast-2.amazonaws.com/health) | Sub-millisecond health status probe & uptime |
+| **💻 Open Source Codebase** | [https://github.com/abhinav29102005/JalFaasla](https://github.com/abhinav29102005/JalFaasla) | Full GitHub repository with CI/CD and tests |
+| **🪣 AWS Storage Bucket** | `s3://jalfaasla.abhinavkumarsingh.tech` | Amazon S3 Storage Bucket (`ap-southeast-2`) |
+
+---
+
 ## 🌾 1. The Context: A Crisis Beneath the Soil
 
 Punjab is the grain basket of India, contributing over 12% of the nation's rice and 18% of its wheat. However, this intensive agricultural output has come at a severe ecological cost: **critical groundwater exhaustion**.
@@ -76,18 +88,40 @@ Running traditional virtual servers ([Amazon EC2](https://aws.amazon.com/ec2/)) 
 
 ---
 
-## ⚙️ 4. Technical Deep Dive: The Agronomic Computation Engine
+## 🧮 4. Scientific Agronomic Models & Mathematical Formulas
 
-### The Hydraulic Energy Model
-The mechanical power required to extract groundwater depends on the dynamic head ($H_{\text{dynamic}}$), water density ($\rho$), gravity ($g$), flow rate ($Q$), and pump set efficiency ($\eta$):
+Our backend advisory engine implements the mathematical models developed by the [Food and Agriculture Organization (FAO)](https://www.fao.org/) and calibrated by [Punjab Agricultural University (PAU)](https://www.pau.edu/):
 
+### Formula 1: Crop Evapotranspiration ($ET_c$)
+Water consumption is modeled using the FAO-56 Penman-Monteith dual crop coefficient method:
+$$ET_c = ET_0 	imes K_c$$
+
+* $ET_0$: Daily reference evapotranspiration (May–June: $8.5 	ext{ mm/day}$; July–August: $4.8 	ext{ mm/day}$; September: $3.8 	ext{ mm/day}$).
+* $K_c$: Crop coefficient (Paddy initial stage: $1.05$; mid-season: $1.20$; late maturity: $0.90$).
+
+By shifting transplanting from May 25 to the notified date of June 20, the crop bypasses 26 days of peak evaporative demand, saving:
+$$\Delta W_{\text{evap}} = \sum_{t=\text{May 25}}^{\text{June 20}} ET_{c,\text{early}}(t) - ET_{c,\text{fallow}}(t) \approx 180\text{ to }220\text{ mm} \; (1.8\text{--}2.2\text{ million liters per hectare})$$
+
+---
+
+### Formula 2: Tube-Well Pumping Energy & Dynamic Head
+The electrical power required to lift groundwater from deep aquifers is governed by:
 $$P_{\text{hydraulic}} = \frac{\rho \cdot g \cdot Q \cdot H_{\text{dynamic}}}{1000 \cdot \eta_{\text{pump}}}$$
 
 Where:
-* Dynamic head accounts for static water table depth plus drawdown and pipe friction.
-* Discharge rate is calibrated by pump horsepower: $\sim 25\text{--}35 \text{ L/s}$ for 10–12.5 HP pumps.
+* $\rho = 1000 \text{ kg/m}^3$ (water density)
+* $g = 9.81 \text{ m/s}^2$ (gravitational acceleration)
+* $Q$: Pump discharge rate ($m^3/s$, calibrated by pump HP: $\sim 25\text{--}35 \text{ L/s}$ for 10–12.5 HP pumps)
+* $H_{\text{dynamic}}$: Total dynamic head ($m$) $= \text{Static Water Table} + \text{Drawdown} + \text{Frictional Head Loss}$
+* $\eta_{\text{pump}}$: Operating efficiency of agricultural pump set (calibrated to $0.62$).
 
-In our [AWS Lambda](https://aws.amazon.com/lambda/) backend, the seasonal reduction in pumping is computed as follows:
+$$\text{Operating Hours Saved} = \frac{\Delta \text{Water Volume Saved } (m^3)}{Q \times 3600}$$
+$$\text{Cost Saved (₹)} = \text{Hours} \times \text{kW rating} \times \text{Effective Tariff Rate (₹/kWh)}$$
+
+---
+
+### Backend Python Implementation in AWS Lambda
+In our [AWS Lambda](https://aws.amazon.com/lambda/) handler, these formulas execute in real-time on every evaluation:
 
 ```python
 # From backend/app/main.py
@@ -136,13 +170,16 @@ Field technology must overcome digital literacy barriers to achieve real-world a
 
 ---
 
-## 🚀 6. Verification & Live Endpoints
+## 🚀 6. Verification & Test Suite
 
-* **🌐 Production Web Application:** [https://jalfaasla.abhinavkumarsingh.tech/](https://jalfaasla.abhinavkumarsingh.tech/)
-* **⚡ Serverless API Gateway:** [https://ofkasl4fri.execute-api.ap-southeast-2.amazonaws.com](https://ofkasl4fri.execute-api.ap-southeast-2.amazonaws.com)
-* **🩺 Live API Health Probe:** [https://ofkasl4fri.execute-api.ap-southeast-2.amazonaws.com/health](https://ofkasl4fri.execute-api.ap-southeast-2.amazonaws.com/health)
-* **💻 Open-Source GitHub Repository:** [https://github.com/abhinav29102005/JalFaasla](https://github.com/abhinav29102005/JalFaasla)
-* **🧪 Test Suite:** Automated test coverage using [pytest](https://docs.pytest.org/) verifying statutory compliance, AWD reductions, and boundary edge cases (8/8 passing).
+The system includes automated tests validating statutory compliance logic, AWD irrigation reduction thresholds, and numerical edge cases:
+
+```bash
+cd backend
+uv run pytest -v
+```
+
+* **8 out of 8 tests passing** (health probe, district extraction, statutory act compliance, AWD calculations, and boundary edge cases).
 
 ---
 
