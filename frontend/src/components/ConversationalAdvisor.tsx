@@ -3,9 +3,10 @@ import {
   Bot, 
   Send, 
   User, 
-  Lightbulb, 
+  Sparkles, 
   CheckCircle2,
-  Cpu
+  HelpCircle,
+  Clock
 } from 'lucide-react';
 import { 
   ChatMessage, 
@@ -38,96 +39,105 @@ export const ConversationalAdvisor: React.FC<ConversationalAdvisorProps> = ({
       id: `user-${Date.now()}`,
       sender: 'user',
       text: text.trim(),
-      timestamp: 'Just now'
+      timestamp: currentLang === 'pa' ? 'ਹੁਣੇ' : 'Just now'
     };
 
     setMessages(prev => [...prev, userMsg]);
     setInputQuery('');
     setIsTyping(true);
 
-    // Simulate Strands Agent / AWS Bedrock inference latency
     setTimeout(() => {
       const response = getAiAgronomistResponse(text, currentLang);
       setMessages(prev => [...prev, response]);
       setIsTyping(false);
-    }, 700);
+    }, 600);
   };
 
+  const sampleQuestions = currentLang === 'pa' ? [
+    { icon: '🌧️', text: 'ਵੀਰਵਾਰ ਨੂੰ ਮੀਂਹ ਹੈ — ਕੀ ਅੱਜ ਟਿਊਬਵੈੱਲ ਚਲਾਵਾਂ?' },
+    { icon: '📅', text: 'ਕੀ ਮੈਂ ਲੁਧਿਆਣੇ ਵਿੱਚ 12 ਜੂਨ ਨੂੰ ਪੀ.ਆਰ.-126 ਲਾ ਸਕਦਾ ਹਾਂ?' },
+    { icon: '💰', text: 'ਪੂਸਾ-44 ਛੱਡ ਕੇ ਪੀ.ਆਰ.-126 ਲਾਉਣ ਨਾਲ ਕਿੰਨੇ ਰੁਪਏ ਬਚਣਗੇ?' },
+    { icon: '🌾', text: 'ਪਾਣੀ-ਪਾਈਪ (AWD) ਕਿਵੇਂ ਬਣਾਈਏ ਅਤੇ ਖੇਤ ਵਿੱਚ ਕਿਵੇਂ ਲਾਈਏ?' },
+  ] : [
+    { icon: '🌧️', text: 'Rain expected Thursday — should I irrigate today?' },
+    { icon: '📅', text: 'Can I transplant PR-126 on June 12 in Ludhiana?' },
+    { icon: '💰', text: 'How much diesel & money saved shifting to PR-126?' },
+    { icon: '🌾', text: 'How to make and install an AWD Pani-Pipe?' },
+  ];
+
   return (
-    <div className="panel">
-      <div className="card-header-row">
-        <div className="title-with-badge">
-          <h2 className="card-title">
-            <Bot className="card-title-icon text-ink" size={20} />
-            {t.tabAiAdvisor}
-          </h2>
-          <span className="status"><span className="status-dot"></span>Strands Agents SDK • AWS Bedrock Model</span>
+    <div className="ai-advisor-card">
+      {/* Friendly Header */}
+      <div className="ai-advisor-header">
+        <div className="ai-header-title-row">
+          <div className="ai-bot-avatar">
+            <Bot size={22} className="text-field" />
+          </div>
+          <div>
+            <h2 className="ai-card-title">
+              {currentLang === 'pa' ? 'ਏ.ਆਈ. ਖੇਤੀਬਾੜੀ ਸਲਾਹਕਾਰ' : 'Ask AI Agronomist'}
+            </h2>
+            <p className="ai-card-subtitle">
+              {currentLang === 'pa' 
+                ? 'ਟਿਊਬਵੈੱਲ ਘੰਟੇ, ਬਿਜਲੀ ਬੱਚਤ, ਪੀਏਯੂ ਸਿਫਾਰਸ਼ਾਂ ਅਤੇ ਮੌਸਮ ਬਾਰੇ ਪੰਜਾਬੀ ਜਾਂ ਅੰਗਰੇਜ਼ੀ ਵਿੱਚ ਕੋਈ ਵੀ ਸਵਾਲ ਪੁੱਛੋ।'
+                : 'Instant advice on tubewell hours, diesel savings, legal planting dates, and weather rain skips.'}
+            </p>
+          </div>
         </div>
 
-        <div className="status">
-          <Cpu size={14} className="text-field" />
-          <span>PAU Ludhiana Agronomy Fine-Tuned</span>
+        <div className="ai-badge-group">
+          <span className="ai-verified-badge">
+            <Sparkles size={13} className="text-mustard" />
+            <span>PAU Ludhiana Guidelines</span>
+          </span>
         </div>
       </div>
 
-      {/* Suggested Quick Prompt Pills */}
-      <div className="quick-prompts-row">
-        <span className="prompts-label">
-          <Lightbulb size={14} className="text-caution" />
-          {currentLang === 'pa' ? 'ਤੁਰੰਤ ਸਵਾਲ ਪੁੱਛੋ:' : 'Common Farmer Inquiries:'}
+      {/* Common Questions Chips */}
+      <div className="quick-inquiries-box">
+        <span className="inquiries-label">
+          <HelpCircle size={14} />
+          {currentLang === 'pa' ? 'ਅਕਸਰ ਪੁੱਛੇ ਜਾਂਦੇ ਸਵਾਲ (ਕਲਿੱਕ ਕਰੋ):' : 'Common questions (click to ask):'}
         </span>
-        <div className="prompts-list">
-          <button
-            type="button"
-            className="prompt-pill"
-            onClick={() => handleSend('I have 4 acres in Ludhiana, tube-well depth 18 m, and rain expected Thursday—when should I irrigate?')}
-          >
-            🌧️ 4 acres in Ludhiana, 18m tube-well, rain Thursday—when should I irrigate?
-          </button>
-          <button
-            type="button"
-            className="prompt-pill"
-            onClick={() => handleSend('Can I transplant PR-126 on June 12 in Ludhiana?')}
-          >
-            ⚖️ Can I transplant PR-126 on June 12 in Ludhiana?
-          </button>
-          <button
-            type="button"
-            className="prompt-pill"
-            onClick={() => handleSend('How much diesel will I save shifting from Pusa-44 to PR-126 with AWD?')}
-          >
-            🛢️ How much diesel saved shifting from Pusa-44 to PR-126 with AWD?
-          </button>
-          <button
-            type="button"
-            className="prompt-pill"
-            onClick={() => handleSend('How to make an AWD Pani-Pipe?')}
-          >
-            🔧 How to make an AWD Pani-Pipe?
-          </button>
+        <div className="inquiries-chips-row">
+          {sampleQuestions.map((q, idx) => (
+            <button
+              key={idx}
+              type="button"
+              className="quick-question-chip"
+              onClick={() => handleSend(q.text)}
+            >
+              <span>{q.icon}</span>
+              <span>{q.text}</span>
+            </button>
+          ))}
         </div>
       </div>
 
       {/* Chat Messages Feed */}
-      <div className="chat-messages-container">
+      <div className="ai-chat-thread">
         {messages.map(msg => (
           <div 
             key={msg.id} 
-            className={`chat-bubble-row ${msg.sender === 'user' ? 'bubble-user' : 'bubble-agent'}`}
+            className={`thread-message-row ${msg.sender === 'user' ? 'from-user' : 'from-bot'}`}
           >
-            <div className="chat-avatar">
+            <div className="message-avatar-circle">
               {msg.sender === 'user' ? <User size={16} /> : <Bot size={16} />}
             </div>
 
-            <div className="chat-bubble-content">
-              <div className="chat-bubble-header">
-                <span className="sender-name font-bold">
-                  {msg.sender === 'user' ? 'You (Punjab Farmer)' : 'JalFaasla AI Agronomist'}
+            <div className="message-content-bubble">
+              <div className="message-meta-header">
+                <span className="author-name">
+                  {msg.sender === 'user' 
+                    ? (currentLang === 'pa' ? 'ਤੁਸੀਂ (ਕਿਸਾਨ)' : 'You (Farmer)') 
+                    : 'JalFaasla AI Agronomist'}
                 </span>
-                <span className="chat-time text-xs text-muted">{msg.timestamp}</span>
+                <span className="message-timestamp">
+                  <Clock size={11} /> {msg.timestamp}
+                </span>
               </div>
 
-              <div className="chat-text-markdown">
+              <div className="message-body-text">
                 {msg.text.split('\n\n').map((para, i) => (
                   <p key={i}>
                     {para.split('**').map((part, pIdx) => (
@@ -138,25 +148,30 @@ export const ConversationalAdvisor: React.FC<ConversationalAdvisorProps> = ({
               </div>
 
               {msg.metricsHighlight && (
-                <div className="chat-metric-highlight">
+                <div className="chat-key-metric-box">
                   <CheckCircle2 size={16} className="text-field" />
-                  <span className="metric-hl-label">{msg.metricsHighlight.label}:</span>
-                  <span className="metric-hl-val tabular-nums font-bold text-field">{msg.metricsHighlight.value}</span>
+                  <span className="metric-name">{msg.metricsHighlight.label}:</span>
+                  <span className="metric-value tabular-nums">{msg.metricsHighlight.value}</span>
                 </div>
               )}
 
               {msg.suggestedActions && msg.suggestedActions.length > 0 && (
-                <div className="sub-suggestions-list">
-                  {msg.suggestedActions.map((sug, sIdx) => (
-                    <button
-                      key={sIdx}
-                      type="button"
-                      className="sub-sug-btn"
-                      onClick={() => handleSend(sug)}
-                    >
-                      {sug}
-                    </button>
-                  ))}
+                <div className="chat-followup-suggestions">
+                  <span className="followup-heading">
+                    {currentLang === 'pa' ? 'ਸਬੰਧਤ ਸਵਾਲ:' : 'Suggested follow-up:'}
+                  </span>
+                  <div className="followup-pills-wrap">
+                    {msg.suggestedActions.map((sug, sIdx) => (
+                      <button
+                        key={sIdx}
+                        type="button"
+                        className="followup-action-pill"
+                        onClick={() => handleSend(sug)}
+                      >
+                        {sug}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
@@ -164,17 +179,19 @@ export const ConversationalAdvisor: React.FC<ConversationalAdvisorProps> = ({
         ))}
 
         {isTyping && (
-          <div className="chat-bubble-row bubble-agent">
-            <div className="chat-avatar">
+          <div className="thread-message-row from-bot">
+            <div className="message-avatar-circle">
               <Bot size={16} />
             </div>
-            <div className="chat-bubble-content typing-bubble">
-              <div className="typing-dots">
+            <div className="message-content-bubble typing-state">
+              <div className="pulse-dots-animation">
                 <span></span>
                 <span></span>
                 <span></span>
               </div>
-              <span className="typing-text">AI Agronomist is analyzing PAU guidelines and weather models...</span>
+              <span className="typing-notice">
+                {currentLang === 'pa' ? 'ਸਲਾਹਕਾਰ ਜਵਾਬ ਤਿਆਰ ਕਰ ਰਿਹਾ ਹੈ...' : 'Analyzing PAU guidelines...'}
+              </span>
             </div>
           </div>
         )}
@@ -182,32 +199,30 @@ export const ConversationalAdvisor: React.FC<ConversationalAdvisorProps> = ({
         <div ref={chatBottomRef} />
       </div>
 
-      {/* Input Form */}
+      {/* Bottom Input Area */}
       <form 
         onSubmit={e => {
           e.preventDefault();
           handleSend(inputQuery);
         }}
-        className="chat-input-bar"
+        className="ai-chat-input-bar"
       >
         <input
           type="text"
-          className="chat-input-field"
+          className="ai-input-field"
           placeholder={currentLang === 'pa' 
-            ? 'ਲੁਧਿਆਣਾ, ਸਿੰਚਾਈ, ਪੀ.ਆਰ.-126 ਜਾਂ ਕਾਨੂੰਨੀ ਮਿਤੀ ਬਾਰੇ ਕੋਈ ਵੀ ਸਵਾਲ ਪੁੱਛੋ...' 
-            : currentLang === 'hi' 
-            ? 'लुधियाना, सिंचाई, पीआर-126 या कानूनी नियमों के बारे में प्रश्न पूछें...' 
-            : 'Ask about tube-well hours, AWD, weather rain skips, or legal sowing dates...'}
+            ? 'ਇੱਥੇ ਆਪਣਾ ਸਵਾਲ ਲਿਖੋ (ਜਿਵੇਂ: ਮੀਂਹ ਕਦੋਂ ਪਵੇਗਾ, ਜਾਂ ਪੀਆਰ-126 ਦੇ ਲਾਭ)...' 
+            : 'Type your question here (e.g. When will rain come, or PR-126 water savings)...'}
           value={inputQuery}
           onChange={e => setInputQuery(e.target.value)}
         />
         <button 
           type="submit" 
-          className="btn-primary chat-send-btn"
+          className="ai-send-action-btn"
           disabled={!inputQuery.trim() || isTyping}
         >
           <Send size={16} />
-          <span>Send</span>
+          <span>{currentLang === 'pa' ? 'ਭੇਜੋ' : 'Send'}</span>
         </button>
       </form>
     </div>
