@@ -94,9 +94,9 @@ Our backend advisory engine implements the mathematical models developed by the 
 
 ### Formula 1: Crop Evapotranspiration ($ET_c$)
 Water consumption is modeled using the FAO-56 Penman-Monteith dual crop coefficient method:
-$$ET_c = ET_0 	imes K_c$$
+$$ET_c = ET_0 \times K_c$$
 
-* $ET_0$: Daily reference evapotranspiration (May–June: $8.5 	ext{ mm/day}$; July–August: $4.8 	ext{ mm/day}$; September: $3.8 	ext{ mm/day}$).
+* $ET_0$: Daily reference evapotranspiration (May–June: $8.5 \text{ mm/day}$; July–August: $4.8 \text{ mm/day}$; September: $3.8 \text{ mm/day}$).
 * $K_c$: Crop coefficient (Paddy initial stage: $1.05$; mid-season: $1.20$; late maturity: $0.90$).
 
 By shifting transplanting from May 25 to the notified date of June 20, the crop bypasses 26 days of peak evaporative demand, saving:
