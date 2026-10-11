@@ -37,30 +37,30 @@ JalFaasla/
 ### Phase 1: Frontend ↔ Backend End-to-End Dynamic Integration
 **Objective**: Replace client-side mock logic in the React UI with real-time API Gateway integration.
 
-- [ ] **1.1 API Client Layer (`frontend/src/services/api.ts`)**:
-  - Implement Axios/Fetch client with environment-aware baseURL (`VITE_API_URL` pointing to local `http://localhost:8000` during dev and AWS API Gateway in production).
-  - Include TypeScript request/response contracts mirrored from `backend/app/models/schemas.py`.
-- [ ] **1.2 Dynamic Advisory Form**:
-  - Connect `FarmerOnboardingForm.tsx` to `POST /advisor/evaluate`.
-  - Trigger loading states, error boundaries, and debounce calculations.
-- [ ] **1.3 Dynamic Groundwater Scorecard & Gauge**:
-  - Populate gauge with real extraction stage (%) and annual decline rate (cm/yr) from `GET /groundwater/block/{block_name}`.
-- [ ] **1.4 Live Agromet Weather & Rain Suppression Alerts**:
-  - Connect `IrrigationScheduler.tsx` to `GET /weather/forecast` to dynamically render the 7-day Pani Pipe AWD schedule and storm suppression triggers.
-- [ ] **1.5 Interactive Community Crowdsourced Reports**:
-  - Enable live form submission to `POST /community/reports` and polling/refreshing of recent village borehole readings from `GET /community/reports`.
+- [x] **1.1 API Client Layer (`frontend/src/services/api.ts`)**:
+  - Implemented typed Fetch client with environment-aware baseURL (`VITE_API_URL` pointing to local `http://localhost:8000` during dev and AWS API Gateway in production).
+  - Included TypeScript request/response contracts mirrored from `backend/app/models/schemas.py`.
+- [x] **1.2 Dynamic Advisory Form**:
+  - Connected `FarmerOnboardingForm.tsx` & `App.tsx` to `POST /advisor/evaluate`.
+  - Added loading states, error boundaries, live sync status badge, and debounce calculations.
+- [x] **1.3 Dynamic Groundwater Scorecard & Gauge**:
+  - Populated gauge and factors grid with real extraction stage (%) and annual decline rate (cm/yr) from `GET /groundwater/block/{block_name}`.
+- [x] **1.4 Live Agromet Weather & Rain Suppression Alerts**:
+  - Connected `IrrigationScheduler.tsx` to `GET /weather/forecast` to dynamically render the 7-day Pani Pipe AWD schedule and storm suppression triggers.
+- [x] **1.5 Interactive Community Crowdsourced Reports**:
+  - Enabled live form submission to `POST /community/reports` and polling/refreshing of recent village borehole readings from `GET /community/reports`.
 
 ---
 
 ### Phase 2: Production Hosting & Single-Domain CloudFront CDN
 **Objective**: Serve both the React SPA and API Gateway behind a unified CloudFront distribution with HTTPS and zero-CORS latency.
 
-- [ ] **2.1 CloudFront Distribution Architecture**:
+- [x] **2.1 CloudFront Distribution Architecture**:
   - **Default Cache Behavior (`/*`)**: Origin points to S3 frontend bucket with Origin Access Control (OAC). SPA routing configured via 404/403 redirect to `index.html`.
   - **API Behavior (`/advisor/*`, `/groundwater/*`, `/crops/*`, `/weather/*`, `/community/*`, `/health`)**: Origin points to the HTTP API Gateway endpoint with caching disabled (query strings, headers, and methods forwarded).
-- [ ] **2.2 SAM Template Update (`aws/template.yaml`)**:
-  - Add `AWS::CloudFront::Distribution` and `AWS::CloudFront::OriginAccessControl`.
-- [ ] **2.3 Automated Deployment Script (`aws/deploy.sh`)**:
+- [x] **2.2 SAM Template Update (`aws/template.yaml`)**:
+  - Added `AWS::CloudFront::Distribution` and `AWS::CloudFront::OriginAccessControl` with S3 Bucket Policy.
+- [x] **2.3 Automated Deployment Script (`aws/deploy.sh` & `aws/deploy.ps1`)**:
   - Single command script: build backend -> `sam deploy` -> build frontend -> `aws s3 sync` -> `aws cloudfront create-invalidation`.
 
 ---
@@ -68,25 +68,29 @@ JalFaasla/
 ### Phase 3: Persistent Database Layer (Amazon DynamoDB)
 **Objective**: Transition from in-memory pre-seeded storage to persistent, serverless DynamoDB tables.
 
-- [ ] **3.1 Table Definitions in SAM Template**:
+- [x] **3.1 Table Definitions in SAM Template**:
   - `FarmerEvaluationsTable`: Partition Key `block_name` (String), Sort Key `timestamp` (String). Stores anonymous plot evaluations for district planning.
   - `CommunityBoreholeReportsTable`: Partition Key `district_block` (String), Sort Key `report_id` (String). Stores farmer borehole measurements and pump lowerings.
-- [ ] **3.2 Backend Service Updates**:
-  - Use `aioboto3` or standard `boto3` in `community_service.py` to persist and query reports.
-  - Implement IAM least-privilege role permissions on `JalFaaslaBackendFunctionRole` (`dynamodb:PutItem`, `dynamodb:Query`, `dynamodb:Scan`).
+- [x] **3.2 Backend Service Updates**:
+  - Integrated `boto3` in `community_service.py` to persist and query reports with graceful memory fallback.
+  - Integrated anonymous evaluation persistence in `advisory_service.py`.
+  - Added IAM least-privilege role policies on `JalFaaslaBackendFunction` in `aws/template.yaml` (`DynamoDBCrudPolicy`).
 
 ---
 
 ### Phase 4: Farmer Accessibility & Hyper-Local Mobile Features
 **Objective**: Bridge the digital divide for rural Punjabi farmers.
 
-- [ ] **4.1 Voice Advisory / Audio Playback (AWS Polly)**:
-  - Generate Punjabi audio summaries of recommendations: *"ਤੁਹਾਡੇ 3 ਏਕੜ ਖੇਤ ਲਈ, ਪੀਆਰ-126 ਬੀਜਣ ਨਾਲ 420 ਘੰਟੇ ਟਿਊਬਵੈੱਲ ਅਤੇ ₹50,400 ਦੀ ਬੱਚਤ ਹੋਵੇਗੀ।"*
-  - Add a 1-click audio play button on the scorecard.
-- [ ] **4.2 SMS / WhatsApp Monsoon Alerts (Amazon SNS / Pinpoint)**:
-  - Daily 6:00 AM SMS alert for registered villages: *"ਪੀਏਯੂ ਮੌਸਮ ਚਿਤਾਵਨੀ: ਅੱਜ ਰਾਤ ਭਾਰੀ ਮੀਂਹ ਦੀ ਸੰਭਾਵਨਾ ਹੈ। ਟਿਊਬਵੈੱਲ ਨਾ ਚਲਾਓ।"*
-- [ ] **4.3 Interactive Punjab District & Block GIS Map**:
-  - Leaflet-based vector map covering all 150+ Punjab blocks colored by CGWB groundwater criticality (Over-exploited = Dark Red, Critical = Orange, Safe = Blue).
+- [x] **4.1 Voice Advisory / Audio Playback (AWS Polly & Web Speech Synthesis)**:
+  - Generated natural Punjabi audio summaries of recommendations in `frontend/src/utils/voiceAdvisory.ts`.
+  - Added a 1-click audio play button with playing state and waveform on the Crop Economics scorecard banner.
+- [x] **4.2 SMS / WhatsApp Monsoon Alerts (Amazon SNS / Pinpoint)**:
+  - Created `SmsAlertModal.tsx` allowing farmers to subscribe to daily 6:00 AM PAU Agromet rain suppression alerts.
+  - Integrated quick action button in both `Header.tsx` and `IrrigationScheduler.tsx`.
+- [x] **4.3 Interactive Punjab District & Block GIS Map**:
+  - Implemented interactive vector GIS map in `PunjabGisMap.tsx` covering all Punjab central belt blocks color-coded by CGWB groundwater criticality.
+  - Interactive click-to-select updates the entire advisory engine in real-time.
+
 
 ---
 
@@ -100,9 +104,10 @@ JalFaasla/
 
 ## 5. Implementation Schedule
 
-| Milestone | Deliverables | Target Timeline |
-| :--- | :--- | :--- |
-| **Milestone 1** | Full Frontend ↔ Backend integration, dynamic forms, API client | Sprint 1 |
-| **Milestone 2** | CloudFront CDN distribution, unified domain, single-command deploy | Sprint 2 |
-| **Milestone 3** | DynamoDB persistence for community reports and plot evaluations | Sprint 3 |
-| **Milestone 4** | Punjabi text-to-speech audio advisories and interactive GIS map | Sprint 4 |
+| Milestone | Deliverables | Target Timeline | Status |
+| :--- | :--- | :--- | :--- |
+| **Milestone 1** | Full Frontend ↔ Backend integration, dynamic forms, API client | Sprint 1 | ✅ Completed |
+| **Milestone 2** | CloudFront CDN distribution, unified domain, single-command deploy | Sprint 2 | ✅ Completed |
+| **Milestone 3** | DynamoDB persistence for community reports and plot evaluations | Sprint 3 | ✅ Completed |
+| **Milestone 4** | Punjabi text-to-speech audio advisories and interactive GIS map | Sprint 4 | ✅ Completed |
+

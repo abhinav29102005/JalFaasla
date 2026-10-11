@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   CheckCircle2, 
   Clock, 
   IndianRupee, 
   Droplet, 
   TrendingUp, 
-  Flame, 
-  Layers
+  Flame,
+  Volume2,
+  Square
 } from 'lucide-react';
 import { FarmerAdvisoryResult } from '../utils/advisoryEngine';
-import { Language, TRANSLATIONS } from '../data/translations';
+import { Language } from '../data/translations';
+import { playPunjabiAdvisory, stopVoiceAdvisory } from '../utils/voiceAdvisory';
 
 interface CropFitComparisonProps {
   currentLang: Language;
@@ -20,8 +22,36 @@ export const CropFitComparison: React.FC<CropFitComparisonProps> = ({
   currentLang,
   advisory,
 }) => {
-  const t = TRANSLATIONS[currentLang];
   const [selectedPlan, setSelectedPlan] = useState<'pr126' | 'diversified'>('pr126');
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+
+  useEffect(() => {
+    return () => {
+      stopVoiceAdvisory();
+    };
+  }, []);
+
+  const handleToggleAudio = () => {
+    if (isPlayingAudio) {
+      stopVoiceAdvisory();
+      setIsPlayingAudio(false);
+    } else {
+      const speechText = currentLang === 'pa' 
+        ? advisory.headlinePunchlinePa 
+        : currentLang === 'hi' 
+        ? advisory.headlinePunchlineHi 
+        : advisory.headlinePunchline;
+
+      setIsPlayingAudio(true);
+      playPunjabiAdvisory(
+        speechText,
+        currentLang,
+        () => setIsPlayingAudio(true),
+        () => setIsPlayingAudio(false),
+        () => setIsPlayingAudio(false)
+      );
+    }
+  };
 
   const { baseline, recommendedShortPaddyAwd, recommendedDiversified } = advisory;
   const activePlan = selectedPlan === 'pr126' ? recommendedShortPaddyAwd : recommendedDiversified;
@@ -30,9 +60,43 @@ export const CropFitComparison: React.FC<CropFitComparisonProps> = ({
     <div className="card cropfit-card">
       {/* Real-world Pitch Banner in Blue Gradient */}
       <div className="punchline-blue-card">
-        <div className="punchline-lead-tag">
-          {currentLang === 'pa' ? 'ਤੁਹਾਡੇ ਖੇਤ ਦਾ ਸਿੱਧਾ ਹਿਸਾਬ-ਕਿਤਾਬ' : 'REAL ECONOMIC IMPACT ON YOUR FARM'}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+          <div className="punchline-lead-tag">
+            {currentLang === 'pa' ? 'ਤੁਹਾਡੇ ਖੇਤ ਦਾ ਸਿੱਧਾ ਹਿਸਾਬ-ਕਿਤਾਬ' : 'REAL ECONOMIC IMPACT ON YOUR FARM'}
+          </div>
+          <button
+            type="button"
+            onClick={handleToggleAudio}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '6px 14px',
+              borderRadius: '20px',
+              border: '1px solid rgba(56, 189, 248, 0.4)',
+              background: isPlayingAudio ? 'rgba(239, 68, 68, 0.2)' : 'rgba(56, 189, 248, 0.15)',
+              color: isPlayingAudio ? '#fca5a5' : '#38bdf8',
+              cursor: 'pointer',
+              fontWeight: 600,
+              fontSize: '12px',
+              transition: 'all 0.2s ease',
+            }}
+            title="Listen to Punjabi Voice Advisory"
+          >
+            {isPlayingAudio ? (
+              <>
+                <Square size={13} fill="currentColor" />
+                <span>{currentLang === 'pa' ? 'ਆਵਾਜ਼ ਬੰਦ ਕਰੋ (Stop)' : 'Stop Audio'}</span>
+              </>
+            ) : (
+              <>
+                <Volume2 size={15} />
+                <span>{currentLang === 'pa' ? '🔊 ਆਵਾਜ਼ ਵਿੱਚ ਸੁਣੋ (Play Audio)' : '🔊 Listen Voice Advisory'}</span>
+              </>
+            )}
+          </button>
         </div>
+
         <h3 className="punchline-main-heading">
           "{currentLang === 'pa' 
             ? advisory.headlinePunchlinePa 
@@ -46,6 +110,7 @@ export const CropFitComparison: React.FC<CropFitComparisonProps> = ({
             : 'Based on Punjab Agricultural University (PAU) Ludhiana trials and Central Ground Water Board monitoring.'}
         </p>
       </div>
+
 
       {/* 4 Big Numbers - Simple for Farmers */}
       <div className="big-metrics-grid">

@@ -10,6 +10,8 @@ Globals:
     Environment:
       Variables:
         STAGE: prod
+        EVALUATIONS_TABLE: !Ref FarmerEvaluationsTable
+        REPORTS_TABLE: !Ref CommunityBoreholeReportsTable
 
 Resources:
   # HTTP API Gateway for clean direct routes
@@ -33,6 +35,11 @@ Resources:
       CodeUri: ../backend
       Handler: app.main.handler
       Description: JalFaasla FastAPI advisory computation engine
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref FarmerEvaluationsTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref CommunityBoreholeReportsTable
       Events:
         ProxyRoute:
           Type: HttpApi
@@ -47,6 +54,40 @@ Resources:
             Path: /
             Method: ANY
 
+  # DynamoDB Table: Farmer Anonymous Evaluations
+  FarmerEvaluationsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "jalfaasla-farmer-evaluations-${AWS::AccountId}"
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: block_name
+          AttributeType: S
+        - AttributeName: timestamp
+          AttributeType: S
+      KeySchema:
+        - AttributeName: block_name
+          KeyType: HASH
+        - AttributeName: timestamp
+          KeyType: RANGE
+
+  # DynamoDB Table: Community Crowdsourced Borehole Reports
+  CommunityBoreholeReportsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "jalfaasla-community-reports-${AWS::AccountId}"
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: district_block
+          AttributeType: S
+        - AttributeName: report_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: district_block
+          KeyType: HASH
+        - AttributeName: report_id
+          KeyType: RANGE
+
   # S3 Bucket for Frontend Hosting
   FrontendBucket:
     Type: AWS::S3::Bucket
@@ -58,10 +99,193 @@ Resources:
         IgnorePublicAcls: true
         RestrictPublicBuckets: true
 
+  # CloudFront Origin Access Control (OAC) for S3
+  FrontendOAC:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub "JalFaasla-Frontend-OAC-${AWS::AccountId}"
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  # CloudFront Distribution: Single unified domain for React SPA + API Gateway
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Comment: "JalFaasla Single-Domain CDN for React SPA and HTTP API Gateway"
+        DefaultRootObject: index.html
+        Origins:
+          - Id: S3FrontendOrigin
+            DomainName: !GetAtt FrontendBucket.RegionalDomainName
+            OriginAccessControlId: !Ref FrontendOAC
+            S3OriginConfig: {}
+          - Id: HttpApiOrigin
+            DomainName: !Sub "${JalFaaslaHttpApi}.execute-api.${AWS::Region}.amazonaws.com"
+            CustomOriginConfig:
+              ProtocolPolicy: https-only
+              HTTPPort: 80
+              HTTPSPort: 443
+        DefaultCacheBehavior:
+          TargetOriginId: S3FrontendOrigin
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          CachedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          Compress: true
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: none
+        CacheBehaviors:
+          - PathPattern: /advisor/*
+            TargetOriginId: HttpApiOrigin
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+              - PUT
+              - POST
+              - PATCH
+              - DELETE
+            CachedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+            CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
+            OriginRequestPolicyId: b680b4b7-0361-465e-ac9b-02b1232e1ffc
+          - PathPattern: /groundwater/*
+            TargetOriginId: HttpApiOrigin
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+              - PUT
+              - POST
+              - PATCH
+              - DELETE
+            CachedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+            CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
+            OriginRequestPolicyId: b680b4b7-0361-465e-ac9b-02b1232e1ffc
+          - PathPattern: /crops/*
+            TargetOriginId: HttpApiOrigin
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+              - PUT
+              - POST
+              - PATCH
+              - DELETE
+            CachedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+            CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
+            OriginRequestPolicyId: b680b4b7-0361-465e-ac9b-02b1232e1ffc
+          - PathPattern: /weather/*
+            TargetOriginId: HttpApiOrigin
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+              - PUT
+              - POST
+              - PATCH
+              - DELETE
+            CachedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+            CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
+            OriginRequestPolicyId: b680b4b7-0361-465e-ac9b-02b1232e1ffc
+          - PathPattern: /community/*
+            TargetOriginId: HttpApiOrigin
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+              - PUT
+              - POST
+              - PATCH
+              - DELETE
+            CachedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+            CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
+            OriginRequestPolicyId: b680b4b7-0361-465e-ac9b-02b1232e1ffc
+          - PathPattern: /health
+            TargetOriginId: HttpApiOrigin
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+            CachedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+            CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
+            OriginRequestPolicyId: b680b4b7-0361-465e-ac9b-02b1232e1ffc
+        CustomErrorResponses:
+          - ErrorCode: 403
+            ResponsePagePath: /index.html
+            ResponseCode: 200
+            ErrorCachingMinTTL: 10
+          - ErrorCode: 404
+            ResponsePagePath: /index.html
+            ResponseCode: 200
+            ErrorCachingMinTTL: 10
+
+  # S3 Bucket Policy allowing CloudFront OAC read access
+  FrontendBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref FrontendBucket
+      PolicyDocument:
+        Statement:
+          - Sid: AllowCloudFrontServicePrincipal
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            Resource: !Sub "${FrontendBucket.Arn}/*"
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}"
+
 Outputs:
+  CloudFrontDistributionUrl:
+    Description: Unified Single-Domain CloudFront CDN distribution URL
+    Value: !Sub "https://${CloudFrontDistribution.DomainName}"
+  CloudFrontDistributionId:
+    Description: CloudFront Distribution ID
+    Value: !Ref CloudFrontDistribution
   ApiEndpoint:
     Description: HTTP API Gateway direct endpoint URL
     Value: !Sub "https://${JalFaaslaHttpApi}.execute-api.${AWS::Region}.amazonaws.com"
   FrontendBucketName:
     Description: S3 Bucket Name for Frontend
     Value: !Ref FrontendBucket
+  EvaluationsTableName:
+    Description: DynamoDB Table Name for Anonymous Farmer Evaluations
+    Value: !Ref FarmerEvaluationsTable
+  ReportsTableName:
+    Description: DynamoDB Table Name for Community Crowdsourced Reports
+    Value: !Ref CommunityBoreholeReportsTable

@@ -1,37 +1,61 @@
-import React from 'react';
 import { 
   AlertTriangle, 
   Activity, 
-  Info,
-  Clock,
-  Gauge
+  Info, 
+  Clock 
 } from 'lucide-react';
 import { GroundwaterAnalysis } from '../utils/groundwaterEngine';
 import { PunjabBlock } from '../data/punjabData';
-import { Language, TRANSLATIONS } from '../data/translations';
+import { Language } from '../data/translations';
+
+import { GroundwaterBlockInfo } from '../services/api';
 
 interface GroundwaterScorecardProps {
   currentLang: Language;
   block: PunjabBlock;
   analysis: GroundwaterAnalysis;
+  liveBlockInfo?: GroundwaterBlockInfo | null;
 }
 
 export const GroundwaterScorecard: React.FC<GroundwaterScorecardProps> = ({
   currentLang,
   block,
   analysis,
+  liveBlockInfo,
 }) => {
-  const t = TRANSLATIONS[currentLang];
+
+
+  const stageExtraction = liveBlockInfo?.stage_of_extraction_pct ?? block.stageOfExtractionPercent;
+  const annualDrop = liveBlockInfo?.annual_water_drop_cm ?? block.annualFallCm;
+  const categoryStr = liveBlockInfo?.category ?? (currentLang === 'pa' ? analysis.categoryLabelPa : analysis.categoryLabel);
+  const waterDepthM = liveBlockInfo?.avg_water_table_depth_m ?? block.waterTableDepthM;
 
   return (
     <div className="card scorecard-card">
       <div className="card-top-row">
         <div>
-          <h2 className="section-title">
-            <Activity className="section-title-icon text-cyan" size={22} />
-            {currentLang === 'pa' ? 'ਜ਼ਮੀਨਦੋਜ਼ ਪਾਣੀ ਦਾ ਸੰਕਟ: ' : 'Groundwater Stress Level: '}
-            <span className="text-white">{block.name} (ਲੁਧਿਆਣਾ)</span>
-          </h2>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            <h2 className="section-title" style={{ margin: 0 }}>
+              <Activity className="section-title-icon text-cyan" size={22} />
+              {currentLang === 'pa' ? 'ਜ਼ਮੀਨਦੋਜ਼ ਪਾਣੀ ਦਾ ਸੰਕਟ: ' : 'Groundwater Stress Level: '}
+              <span className="text-white">{block.name} (ਲੁਧਿਆਣਾ)</span>
+            </h2>
+            {liveBlockInfo && (
+              <span 
+                style={{
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  padding: '2px 8px',
+                  borderRadius: '12px',
+                  background: 'rgba(6, 182, 212, 0.15)',
+                  color: '#06b6d4',
+                  border: '1px solid rgba(6, 182, 212, 0.3)'
+                }}
+              >
+                ✓ CGWB / PWRDA Live
+              </span>
+            )}
+          </div>
           <p className="section-subtitle">
             ਕੇਂਦਰੀ ਜ਼ਮੀਨਦੋਜ਼ ਪਾਣੀ ਬੋਰਡ (CGWB) ਅਤੇ PAU ਲੁਧਿਆਣਾ ਦੇ ਅਸਲ ਮਾਪੇ ਹੋਏ ਅੰਕੜੇ
           </p>
@@ -40,10 +64,11 @@ export const GroundwaterScorecard: React.FC<GroundwaterScorecardProps> = ({
         <div className="status-box">
           <span className="status-label">ਸੰਕਟ ਸ਼੍ਰੇਣੀ (CGWB Category):</span>
           <span className="status-value text-red font-bold">
-            {currentLang === 'pa' ? analysis.categoryLabelPa : analysis.categoryLabel}
+            {categoryStr}
           </span>
         </div>
       </div>
+
 
       <div className="groundwater-layout">
         {/* Big Meter Box */}
@@ -85,7 +110,7 @@ export const GroundwaterScorecard: React.FC<GroundwaterScorecardProps> = ({
           <div className="real-factor-card">
             <span className="rf-title">ਟਿਊਬਵੈੱਲ ਪਾਣੀ ਦੀ ਡੂੰਘਾਈ</span>
             <div className="rf-val text-cyan font-mono font-bold">
-              {block.waterTableDepthM} ਮੀਟਰ (~{Math.round(block.waterTableDepthM * 3.28)} ਫੁੱਟ)
+              {waterDepthM} ਮੀਟਰ (~{Math.round(waterDepthM * 3.28)} ਫੁੱਟ)
             </div>
             <p className="rf-desc">
               ਜਗਰਾਓਂ/ਲੁਧਿਆਣਾ ਵਿੱਚ 60-80 ਫੁੱਟ ਤੱਕ ਪਾਣੀ ਸੁੱਕ ਚੁੱਕਾ ਹੈ। ਮੋਟਰਾਂ ਨੂੰ ਡੂੰਘਾ ਉਤਾਰਨਾ ਪੈ ਰਿਹਾ ਹੈ।
@@ -95,7 +120,7 @@ export const GroundwaterScorecard: React.FC<GroundwaterScorecardProps> = ({
           <div className="real-factor-card">
             <span className="rf-title">ਸਾਲਾਨਾ ਪਾਣੀ ਗਿਰਨ ਦੀ ਦਰ</span>
             <div className="rf-val text-amber font-mono font-bold">
-              {block.annualFallCm} cm / ਸਾਲ
+              {annualDrop} cm / ਸਾਲ
             </div>
             <p className="rf-desc">
               ਪੰਜਾਬ ਖੇਤੀਬਾੜੀ ਯੂਨੀਵਰਸਿਟੀ (PAU) ਅਨੁਸਾਰ 50cm ਤੋਂ ਵੱਧ ਗਿਰਾਵਟ ਖ਼ਤਰਨਾਕ ਹੈ।
@@ -105,10 +130,10 @@ export const GroundwaterScorecard: React.FC<GroundwaterScorecardProps> = ({
           <div className="real-factor-card">
             <span className="rf-title">ਪਾਣੀ ਕੱਢਣ ਦੀ ਦਰ (Extraction)</span>
             <div className="rf-val text-red font-mono font-bold">
-              {block.stageOfExtractionPercent}%
+              {stageExtraction}%
             </div>
             <p className="rf-desc">
-              100 ਲੀਟਰ ਮੀਂਹ ਦੇ ਮੁਕਾਬਲੇ 188 ਲੀਟਰ ਪਾਣੀ ਜ਼ਮੀਨ ਵਿੱਚੋਂ ਕੱਢਿਆ ਜਾ ਰਿਹਾ ਹੈ।
+              100 ਲੀਟਰ ਮੀਂਹ ਦੇ ਮੁਕਾਬਲੇ {stageExtraction} ਲੀਟਰ ਪਾਣੀ ਜ਼ਮੀਨ ਵਿੱਚੋਂ ਕੱਢਿਆ ਜਾ ਰਿਹਾ ਹੈ (CGWB Block Report)।
             </p>
           </div>
 
@@ -127,7 +152,7 @@ export const GroundwaterScorecard: React.FC<GroundwaterScorecardProps> = ({
       <div className="observation-strip">
         <Info size={16} className="text-cyan flex-shrink-0" />
         <span>
-          <strong>ਜ਼ਮੀਨੀ ਹਾਲਤ ({block.name}):</strong> {block.localObservations}
+          <strong>ਜ਼ਮੀਨੀ ਹਾਲਤ ({block.name}):</strong> {liveBlockInfo?.description || block.localObservations}
         </span>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Droplet, Languages, Share2, Server, AlertTriangle } from 'lucide-react';
+import { Droplet, Languages, Share2, Server, AlertTriangle, Bell } from 'lucide-react';
 import { Language, TRANSLATIONS } from '../data/translations';
 
 interface HeaderProps {
@@ -8,6 +8,7 @@ interface HeaderProps {
   onOpenAwsModal: () => void;
   onOpenShareModal: () => void;
   onOpenLegalModal: () => void;
+  onOpenSmsModal?: () => void;
   isLegalViolation: boolean;
 }
 
@@ -17,9 +18,11 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenAwsModal,
   onOpenShareModal,
   onOpenLegalModal,
+  onOpenSmsModal,
   isLegalViolation,
 }) => {
   const t = TRANSLATIONS[currentLang];
+
 
   return (
     <header className="site-header">
@@ -106,6 +109,24 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
 
               {/* Action Buttons */}
+              {onOpenSmsModal && (
+                <button
+                  type="button"
+                  className="nav-btn"
+                  onClick={onOpenSmsModal}
+                  style={{
+                    background: 'rgba(6, 182, 212, 0.15)',
+                    color: '#38bdf8',
+                    border: '1px solid rgba(6, 182, 212, 0.3)',
+                    cursor: 'pointer'
+                  }}
+                  title="Enable Daily 6:00 AM Rain Alert SMS"
+                >
+                  <Bell size={14} />
+                  <span>{currentLang === 'pa' ? 'SMS ਅਲਰਟ' : 'SMS Alerts'}</span>
+                </button>
+              )}
+
               <button
                 type="button"
                 className="nav-btn nav-btn-share"
@@ -124,6 +145,7 @@ export const Header: React.FC<HeaderProps> = ({
                 <span>AWS Cloud</span>
               </button>
             </div>
+
           </div>
         </div>
       </div>

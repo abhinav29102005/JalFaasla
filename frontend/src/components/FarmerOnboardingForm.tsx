@@ -18,6 +18,8 @@ interface FarmerOnboardingFormProps {
   input: FarmerAdvisoryInput;
   onChange: (updated: FarmerAdvisoryInput) => void;
   onApplyPreset: (presetName: 'ludhiana' | 'sangrur' | 'bet') => void;
+  isEvaluating?: boolean;
+  apiStatus?: 'connected' | 'syncing' | 'offline' | 'error';
 }
 
 export const FarmerOnboardingForm: React.FC<FarmerOnboardingFormProps> = ({
@@ -25,6 +27,8 @@ export const FarmerOnboardingForm: React.FC<FarmerOnboardingFormProps> = ({
   input,
   onChange,
   onApplyPreset,
+  isEvaluating = false,
+  apiStatus = 'connected',
 }) => {
   const t = TRANSLATIONS[currentLang];
 
@@ -61,16 +65,47 @@ export const FarmerOnboardingForm: React.FC<FarmerOnboardingFormProps> = ({
     <div className="card onboarding-card">
       <div className="form-header-row">
         <div>
-          <h2 className="section-title">
-            <MapPin className="section-title-icon text-blue" size={22} />
-            {currentLang === 'pa' ? '1. ਖੇਤ ਅਤੇ ਟਿਊਬਵੈੱਲ ਦੀ ਜਾਣਕਾਰੀ' : currentLang === 'hi' ? '1. खेत एवं ट्यूबवेल विवरण' : '1. Enter Farm & Tube-Well Details'}
-          </h2>
+          <div className="flex items-center gap-2" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            <h2 className="section-title" style={{ margin: 0 }}>
+              <MapPin className="section-title-icon text-blue" size={22} />
+              {currentLang === 'pa' ? '1. ਖੇਤ ਅਤੇ ਟਿਊਬਵੈੱਲ ਦੀ ਜਾਣਕਾਰੀ' : currentLang === 'hi' ? '1. खेत एवं ट्यूबवेल विवरण' : '1. Enter Farm & Tube-Well Details'}
+            </h2>
+            <span 
+              className={`api-sync-badge ${isEvaluating ? 'syncing' : apiStatus === 'offline' ? 'offline' : 'connected'}`}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '5px',
+                fontSize: '11px',
+                fontWeight: 600,
+                padding: '2px 8px',
+                borderRadius: '12px',
+                background: isEvaluating ? 'rgba(6, 182, 212, 0.15)' : apiStatus === 'offline' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)',
+                color: isEvaluating ? '#06b6d4' : apiStatus === 'offline' ? '#f87171' : '#10b981',
+                border: `1px solid ${isEvaluating ? 'rgba(6, 182, 212, 0.3)' : apiStatus === 'offline' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.3)'}`
+              }}
+            >
+              <span 
+                style={{ 
+                  width: '6px', 
+                  height: '6px', 
+                  borderRadius: '50%', 
+                  background: isEvaluating ? '#06b6d4' : apiStatus === 'offline' ? '#f87171' : '#10b981',
+                  animation: isEvaluating ? 'pulse 1s infinite' : 'none' 
+                }} 
+              />
+              {isEvaluating 
+                ? (currentLang === 'pa' ? 'ਕੰਪਿਊਟਿੰਗ... (AWS API)' : 'Calculating (AWS API)...')
+                : (currentLang === 'pa' ? 'AWS ਲਾਈਵ ਜੁੜਿਆ' : 'AWS API Gateway Connected')}
+            </span>
+          </div>
           <p className="section-subtitle">
             {currentLang === 'pa'
               ? 'ਆਪਣਾ ਜ਼ਿਲ੍ਹਾ, ਪਿੰਡ ਦਾ ਬਲਾਕ, ਟਿਊਬਵੈੱਲ ਦੀ ਡੂੰਘਾਈ ਅਤੇ ਫਸਲ ਚੁਣੋ'
               : 'Select your Punjab district, block, actual tube-well water depth and crop plan'}
           </p>
         </div>
+
 
         {/* Real-World Quick Scenarios */}
         <div className="presets-block">

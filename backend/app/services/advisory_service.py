@@ -2,7 +2,8 @@
 Punjab Agricultural University (PAU) Advisory Engine & Farmer Economic Calculator.
 Calculates tubewell pumping hours, diesel/electricity expense, and water savings.
 """
-from datetime import date
+import os
+from datetime import date, datetime
 from typing import Dict, Any, List
 from app.models.schemas import (
     FarmerPlotInput,
@@ -13,6 +14,7 @@ from app.models.schemas import (
 )
 from app.core.legal_rules import check_transplanting_compliance
 from app.services.groundwater_service import calculate_stress_score, get_block_info
+
 
 CROP_DATABASE: Dict[str, CropOption] = {
     "Pusa-44": CropOption(
@@ -188,6 +190,28 @@ def evaluate_farmer_plot(input_data: FarmerPlotInput) -> AdvisoryEvaluationRespo
         irrigation_method=input_data.irrigation_method
     )
     
+    # Persist anonymous evaluation to DynamoDB if configured
+    table_name = os.environ.get("EVALUATIONS_TABLE")
+    if table_name:
+        try:
+            import boto3
+            from decimal import Decimal
+            dynamodb = boto3.resource("dynamodb", region_name=os.environ.get("AWS_REGION", "ap-southeast-2"))
+            tbl = dynamodb.Table(table_name)
+            tbl.put_item(
+                Item={
+                    "block_name": input_data.block,
+                    "timestamp": datetime.now().isoformat(),
+                    "land_size_acres": Decimal(str(input_data.land_size_acres)),
+                    "current_crop": input_data.current_crop,
+                    "hours_saved": Decimal(str(total_hours_saved)),
+                    "cost_saved_inr": Decimal(str(cost_saved_inr)),
+                    "water_m3_saved": Decimal(str(water_m3_saved))
+                }
+            )
+        except Exception:
+            pass
+
     return AdvisoryEvaluationResponse(
         plot_input=input_data,
         groundwater_status=gw_score,
@@ -199,3 +223,4 @@ def evaluate_farmer_plot(input_data: FarmerPlotInput) -> AdvisoryEvaluationRespo
         seven_day_irrigation_schedule=schedule,
         pau_package_of_practices=practices
     )
+

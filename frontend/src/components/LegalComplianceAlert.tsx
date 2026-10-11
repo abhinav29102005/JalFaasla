@@ -74,8 +74,9 @@ export const LegalComplianceAlert: React.FC<LegalComplianceAlertProps> = ({
               <span className="penalty-label">ਸੰਭਾਵੀ ਕਾਨੂੰਨੀ ਜੁਰਮਾਨਾ (ਧਾਰਾ 5 ਤਹਿਤ):</span>
               <div className="penalty-amount-row">
                 <span className="penalty-amount font-mono text-red font-bold">
-                  ₹{legal.penaltyRiskInr.toLocaleString('en-IN')}
+                  ₹{(legal.penaltyRiskInr ?? 0).toLocaleString('en-IN')}
                 </span>
+
                 <span className="penalty-rate">
                   (₹10,000 ਪ੍ਰਤੀ ਹੈਕਟੇਅਰ ਪ੍ਰਤੀ ਮਹੀਨਾ ਦੇ ਹਿਸਾਬ ਨਾਲ {landSizeAcres} ਏਕੜ 'ਤੇ)
                 </span>
